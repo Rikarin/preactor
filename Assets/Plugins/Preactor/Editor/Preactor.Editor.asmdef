@@ -1,0 +1,23 @@
+{
+    "name": "Preactor.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:dc2480e90c61a56408928299d143339e",
+        "GUID:94665d71376bd96448589cb075740155",
+        "GUID:a537ee5d0f794a7fa9e53f9a224d0fe9"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "NUglify.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

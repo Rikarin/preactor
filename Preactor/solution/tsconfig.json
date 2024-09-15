@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "preact": ["node_modules/@rikarin/preactor/preact"],
+      "preact/*": ["node_modules/@rikarin/preactor/preact/*"]
+    },
+    "outDir": "dist/tsc",
+    "lib": ["esnext"],
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "typeRoots": ["./node_modules/@types"],
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "skipLibCheck": true
+
+    //        Just for cleaning up
+    // "strict": true,
+    //        "noUnusedLocals": true,
+    //        "noUnusedParameters": true,
+    //        "noImplicitAny": true
+  }
+}

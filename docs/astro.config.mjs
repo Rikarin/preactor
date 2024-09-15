@@ -15,11 +15,10 @@ export default defineConfig({
 			sidebar: [
 				{
 					label: 'Getting Started',
-					autogenerate: { directory: 'getting-started' },
-					// items: [
-					// 	// Each item here is one entry in the navigation menu.
-					// 	{ label: 'Example Guide', slug: 'guides/example' },
-					// ],
+					items: [
+						{ label: 'What is this?', slug: 'getting-started/what-is-this' },
+						{ label: 'Installation', slug: 'getting-started/installation' },
+					],
 				},
 				{
 					label: 'Guides',

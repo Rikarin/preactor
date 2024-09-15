@@ -1,0 +1,158 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3109841650952298604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 570709931562565557}
+  - component: {fileID: 6653696603307875496}
+  - component: {fileID: 639002885682759748}
+  - component: {fileID: 4774915275773094425}
+  - component: {fileID: 8403754134788622116}
+  - component: {fileID: 1302679630265067009}
+  m_Layer: 0
+  m_Name: Global DTS
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &570709931562565557
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3109841650952298604}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6653696603307875496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3109841650952298604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa7dae2c113e437e8a4f501626cd3c22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  assemblies:
+  - mscorlib
+  namespaces:
+  - System
+  - System.Collections
+  - System.Collections.Generic
+  whitelistedTypes: []
+  blacklistedTypes: []
+  savePath: '@types/Assemblies/mscorlib.d.ts'
+  strictAssemblies: 1
+  strictNamespaces: 1
+  exact: 0
+  whitelistOnly: 0
+--- !u!114 &639002885682759748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3109841650952298604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa7dae2c113e437e8a4f501626cd3c22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  assemblies:
+  - Unity.Mathematics
+  namespaces: []
+  whitelistedTypes: []
+  blacklistedTypes: []
+  savePath: '@types/Assemblies/Unity.Mathematics.d.ts'
+  strictAssemblies: 1
+  strictNamespaces: 0
+  exact: 1
+  whitelistOnly: 0
+--- !u!114 &4774915275773094425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3109841650952298604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa7dae2c113e437e8a4f501626cd3c22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  assemblies:
+  - Assembly-CSharp-firstpass
+  - Preactor.Runtime
+  namespaces: []
+  whitelistedTypes:
+  - Preactor.Document
+  - Preactor.Dom
+  - Preactor.DomStyle
+  - Preactor.InteropHost
+  blacklistedTypes: []
+  savePath: '@types/Assemblies/Preactor.d.ts'
+  strictAssemblies: 1
+  strictNamespaces: 0
+  exact: 1
+  whitelistOnly: 1
+--- !u!114 &8403754134788622116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3109841650952298604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa7dae2c113e437e8a4f501626cd3c22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  assemblies:
+  - UnityEngine.UIElementsModule
+  namespaces:
+  - UnityEngine.UIElements
+  whitelistedTypes: []
+  blacklistedTypes: []
+  savePath: '@types/Assemblies/UnityEngine.UIElements.d.ts'
+  strictAssemblies: 1
+  strictNamespaces: 1
+  exact: 1
+  whitelistOnly: 0
+--- !u!114 &1302679630265067009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3109841650952298604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa7dae2c113e437e8a4f501626cd3c22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  assemblies:
+  - UnityEngine.CoreModule
+  namespaces:
+  - UnityEngine
+  whitelistedTypes: []
+  blacklistedTypes: []
+  savePath: '@types/Assemblies/UnityEngine.CoreModule.d.ts'
+  strictAssemblies: 1
+  strictNamespaces: 1
+  exact: 1
+  whitelistOnly: 0
