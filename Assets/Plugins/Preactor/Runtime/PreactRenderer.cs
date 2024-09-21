@@ -74,7 +74,10 @@ namespace Preactor {
 #endif
         }
 
-        void OnDestroy() => Shutdown();
+        void OnDestroy() {
+            Shutdown();
+            ContentProvider.Dispose();
+        }
 
         public IContentProvider ContentProvider { get; private set; }
 
