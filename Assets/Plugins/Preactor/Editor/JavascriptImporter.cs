@@ -8,7 +8,7 @@ public class JavascriptImporter : ScriptedImporter {
     public override void OnImportAsset(AssetImportContext ctx) {
         var content = File.ReadAllText(ctx.assetPath);
         var res = Uglify.Js(content);
-
+        
         if (res.HasErrors) {
             Debug.LogError($"Cannot uglify {ctx.assetPath}\n\n" + string.Join("\n\n", res.Errors));
             return;

@@ -66,6 +66,11 @@ namespace Preactor.ContentProviders {
             foreach (var handle in fontCache.Values) {
                 Addressables.Release(handle);
             }
+            
+            javascriptCache.Clear();
+            spriteCache.Clear();
+            textureCache.Clear();
+            fontCache.Clear();
         }
     }
 }
