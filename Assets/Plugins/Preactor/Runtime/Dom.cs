@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 
 namespace Preactor {
@@ -233,6 +234,10 @@ namespace Preactor {
                 return;
             }
 
+            if (a == b) {
+                return;
+            }
+
             if (b?.VisualElement == null || VisualElement.IndexOf(b.VisualElement) == -1) {
                 AppendChild(a);
                 return;
@@ -326,6 +331,10 @@ namespace Preactor {
 
                 case "id":
                     VisualElement.name = null;
+                    break;
+                
+                case "disabled":
+                    VisualElement.SetEnabled(true);
                     break;
 
                 default: {

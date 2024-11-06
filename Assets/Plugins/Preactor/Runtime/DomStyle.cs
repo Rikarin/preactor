@@ -1803,7 +1803,8 @@ namespace Preactor {
                         }
                     }
 
-                    break;
+                    styleListTimeValue = new(timeValues);
+                    return true;
                 }
                 case TimeValue tv:
                     styleListTimeValue = new(new List<TimeValue> { tv });
@@ -1898,7 +1899,7 @@ namespace Preactor {
                     var parts = s.Split(new[] { ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries);
                     var easingFunctions = new List<EasingFunction>();
                     foreach (var part in parts) {
-                        if (Enum.TryParse(part, true, out EasingMode easing)) {
+                        if (Enum.TryParse(part.Replace("_", "").Replace("-", ""), true, out EasingMode easing)) {
                             easingFunctions.Add(easing);
                         }
                     }
@@ -1931,12 +1932,19 @@ namespace Preactor {
                 case string ss when Enum.TryParse(ss, true, out StyleKeyword keyword):
                     styleTranslate = new(keyword);
                     return true;
+                
                 case null:
                     styleTranslate = new(StyleKeyword.Null);
                     return true;
+                
+                case Translate translate:
+                    styleTranslate = translate;
+                    break;
+                
                 case StyleTranslate st:
                     styleTranslate = st;
                     return true;
+                
                 case string s: {
                     var parts = s.Split(new[] { ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries);
                     switch (parts.Length) {
@@ -1950,15 +1958,19 @@ namespace Preactor {
 
                     break;
                 }
+                
                 case double d:
                     styleTranslate = new(new Translate((float)d, (float)d));
                     return true;
+                
                 case Vector2 v2:
                     styleTranslate = new(new Translate(v2.x, v2.y));
                     return true;
+                
                 case Vector3 v3:
                     styleTranslate = new(new Translate(v3.x, v3.y));
                     return true;
+                
                 case JSObject jsObj when jsObj.Get<int>("length") == 2: {
                     var x = jsObj.Get<float>("0");
                     var y = jsObj.Get<float>("1");
@@ -2034,19 +2046,30 @@ namespace Preactor {
                 case string ss when Enum.TryParse(ss, true, out StyleKeyword keyword):
                     styleInt = new(keyword);
                     return true;
+
                 case null:
                     styleInt = new(StyleKeyword.Null);
                     return true;
+
                 case StyleInt si:
                     styleInt = si;
                     return true;
+
                 case double d:
                     styleInt = new((int)d);
                     return true;
-                default:
-                    styleInt = default;
-                    return false;
+
+                case string str:
+                    var match = new Regex(@"^(\d+)").Match(str);
+                    if (match.Success) {
+                        styleInt = new(int.Parse(match.Groups[1].Value));
+                        return true;
+                    }
+                    break;
             }
+
+            styleInt = default;
+            return false;
         }
 
         #endregion
