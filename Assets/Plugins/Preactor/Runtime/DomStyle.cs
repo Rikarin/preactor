@@ -2078,21 +2078,11 @@ namespace Preactor {
 
         static bool GetLength(object value, out Length lengthValue) {
             switch (value) {
-                // Attempt to parse the string for length values (e.g., "100px", "50%")
-                case string s when s.EndsWith("px"): {
-                    if (float.TryParse(s.Substring(0, s.Length - 2), out var pixelValue)) {
-                        lengthValue = new(pixelValue);
-                        return true;
-                    }
-
-                    break;
-                }
                 case string s: {
-                    if (s.EndsWith("%")) {
-                        if (float.TryParse(s.Substring(0, s.Length - 1), out var percentValue)) {
-                            lengthValue = new(percentValue, LengthUnit.Percent);
-                            return true;
-                        }
+                    var str = s.EndsWith("px") ? s[..^2] : s.EndsWith("%") ? s[..^1] : s;
+                    if (float.TryParse(str, out var percentValue)) {
+                        lengthValue = new(percentValue, s.EndsWith("%") ? LengthUnit.Percent : LengthUnit.Pixel);
+                        return true;
                     }
 
                     break;

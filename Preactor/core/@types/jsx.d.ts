@@ -59,6 +59,7 @@ type ScrollViewMode = CS.UnityEngine.UIElements.ScrollViewMode;
 type ScrollerVisibility = CS.UnityEngine.UIElements.ScrollerVisibility;
 type TouchScrollBehavior = CS.UnityEngine.UIElements.ScrollView.TouchScrollBehavior;
 type TooltipEvent = CS.UnityEngine.UIElements.TooltipEvent;
+type TouchScreenKeyboardType = CS.UnityEngine;
 type TransitionCancelEvent = CS.UnityEngine.UIElements.TransitionCancelEvent;
 type TransitionEndEvent = CS.UnityEngine.UIElements.TransitionEndEvent;
 type TransitionRunEvent = CS.UnityEngine.UIElements.TransitionRunEvent;
@@ -71,6 +72,7 @@ declare global {
   export namespace JSX {
     interface IntrinsicAttributes {
       id?: string;
+      key?: string | number;
     }
 
     interface BaseElement {}
@@ -243,9 +245,7 @@ declare global {
 
     interface RadioButton extends BaseBoolField {}
 
-    interface RadioButtonGroup extends BindableElement {
-      label?: string;
-    }
+    interface RadioButtonGroup extends BaseField<number> {}
 
     interface RepeatButton extends TextElement {
       delay?: number;
@@ -309,6 +309,10 @@ declare global {
       'is-password-field'?: boolean;
       'mask-char'?: string;
       'is-read-only'?: boolean;
+      'select-all-on-focus'?: boolean;
+      'select-all-on-mouse-up'?: boolean;
+      'vertical-scroller-visibility'?: ScrollerVisibility;
+      keyboardType?: TouchScreenKeyboardType;
     }
 
     interface TextField extends TextInputBaseField<string> {

@@ -5,6 +5,9 @@ export class DomWrapper {
   #dom: CS.Preactor.Dom;
   #domStyleWrapper: DomStyleWrapper;
 
+  #cachedChildren: DomWrapper[] | null = null;
+  #boundListeners = new WeakMap();
+
   public get _dom(): CS.Preactor.Dom {
     return this.#dom;
   }
@@ -14,7 +17,15 @@ export class DomWrapper {
   }
 
   public get childNodes(): DomWrapper[] {
-    return (this.#dom.ChildNodes as unknown as CS.Preactor.Dom[]).map(x => new DomWrapper(x));
+    if (!this.#cachedChildren) {
+      this.#cachedChildren = new Array(this.#dom.ChildNodes.Length) as DomWrapper[];
+
+      for (let i = 0; i < this.#dom.ChildNodes.Length; i++) {
+        this.#cachedChildren[i] = new DomWrapper(this.#dom.ChildNodes.get_Item(i));
+      }
+    }
+
+    return this.#cachedChildren;
   }
 
   public get firstChild(): DomWrapper | null {
@@ -73,19 +84,27 @@ export class DomWrapper {
   }
 
   appendChild(child: DomWrapper) {
-    this.#dom.AppendChild(child.#dom);
+    if (child) {
+      this.#dom.AppendChild(child.#dom);
+      this.#cachedChildren = null;
+    }
   }
 
   removeChild(child: DomWrapper) {
-    this.#dom.RemoveChild(child.#dom);
+    if (child) {
+      this.#dom.RemoveChild(child.#dom);
+      this.#cachedChildren = null;
+    }
   }
 
   insertBefore(a: DomWrapper, b: DomWrapper) {
     this.#dom.InsertBefore(a?._dom, b?._dom);
+    this.#cachedChildren = null;
   }
 
   clearChildren() {
     this.#dom.ClearChildren();
+    this.#cachedChildren = null;
   }
 
   focus() {
@@ -93,17 +112,31 @@ export class DomWrapper {
   }
 
   contains(element: DomWrapper) {
+    if (!element) {
+      return false;
+    }
+
     return this.#dom.Contains(element.#dom);
   }
 
   addEventListener(type: string, listener: (event: EventBase) => void, useCapture?: boolean) {
-    // @ts-ignore
+    let boundListener = this.#boundListeners.get(listener);
+
+    if (!boundListener) {
+      boundListener = listener.bind(this);
+      this.#boundListeners.set(listener, boundListener);
+    }
+
     this.#dom.AddEventListener(type, listener.bind(this), useCapture);
   }
 
   removeEventListener(type: string, listener: (event: EventBase) => void, useCapture?: boolean) {
-    // @ts-ignore
-    this.#dom.RemoveEventListener(type, listener.bind(this), useCapture);
+    const boundListener = this.#boundListeners.get(listener);
+
+    if (boundListener) {
+      this.#dom.RemoveEventListener(type, listener.bind(this), useCapture);
+      this.#boundListeners.delete(listener);
+    }
   }
 
   setAttribute(name: string, value: any) {

@@ -161,6 +161,8 @@ exports.corePlugins = [
   'padding',
   'opacity',
   'overflow',
+  'display',
+  'visibility',
   'position',
   'textOverflow',
   'inset'

@@ -33,7 +33,7 @@ declare module 'preact/jsx' {
     backgroundImage?: Sprite | Texture | string; // StyleBackground
     backgroundSize?: BackgroundSize | string; // StyleBackgroundSize
     backgroundRepeat?: BackgroundRepeat | string; // StyleBackgroundRepeat
-    backgroundPosition?: string;   // StyleBackgroundPosition
+    backgroundPosition?: string; // StyleBackgroundPosition
     backgroundPositionX?: BackgroundPosition | string; // StyleBackgroundPosition
     backgroundPositionY?: BackgroundPosition | string; // StyleBackgroundPosition
 

@@ -6,10 +6,8 @@ function setStyle(style, key, value) {
     style.setProperty(key, value == null ? '' : value);
   } else if (value == null) {
     style[key] = '';
-  } else if (typeof value != 'number' || IS_NON_DIMENSIONAL.test(key)) {
-    style[key] = value;
   } else {
-    style[key] = value + 'px';
+    style[key] = value;
   }
 }
 
@@ -68,10 +66,7 @@ export function setProperty(dom, name, value, oldValue, namespace) {
   // Benchmark for comparison: https://esbench.com/bench/574c954bdb965b9a00965ac6
   else if (name[0] === 'o' && name[1] === 'n') {
     useCapture = name !== (name = name.replace(/(PointerCapture)$|Capture$/i, '$1'));
-
-    // Infer correct casing for DOM built-in events:
-    if (name.toLowerCase() in dom || name === 'onFocusOut' || name === 'onFocusIn') name = name.toLowerCase().slice(2);
-    else name = name.slice(2);
+    name = name.slice(2);
 
     if (!dom._listeners) dom._listeners = {};
     dom._listeners[name + useCapture] = value;
@@ -124,7 +119,8 @@ export function setProperty(dom, name, value, oldValue, namespace) {
 
     if (typeof value == 'function') {
       // never serialize functions as attribute values
-    } else if (value != null && (value !== false || name[4] === '-')) {
+      // } else if (value != null && (value !== false || name[4] === '-')) {
+    } else if (value != null && typeof value !== 'undefined') {
       dom.setAttribute(name, name == 'popover' && value == true ? '' : value);
     } else {
       dom.removeAttribute(name);
