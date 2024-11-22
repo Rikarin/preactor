@@ -1,8 +1,8 @@
 using Preactor.Utils.Attributes;
 using Puerts;
 using System;
+using System.ComponentModel;
 using System.Reflection;
-using UnityEngine;
 
 namespace Preactor {
     /// <summary>
@@ -24,13 +24,16 @@ namespace Preactor {
                 throw new NotSupportedException("Store should have 2 generic arguments");
             }
 
-            var enumKey = Enum.Parse(args[0], key.ToString());
+            var dicKey = args[0].IsEnum
+                ? Enum.Parse(args[0], key.ToString())
+                : TypeDescriptor.GetConverter(args[0]).ConvertFrom(key.ToString());
+            
             var methodInfo = store.GetType().GetMethod("AddOrUpdateSubscribe");
             if (methodInfo == null) {
                 throw new NotSupportedException("AddOrUpdateSubscribe method not found");
             }
 
-            var disposable = methodInfo.Invoke(store, new[] { enumKey, callback }) as IDisposable;
+            var disposable = methodInfo.Invoke(store, new[] { dicKey, callback }) as IDisposable;
             OnReload += Unsubscribe;
             OnDestroy += Unsubscribe;
 
