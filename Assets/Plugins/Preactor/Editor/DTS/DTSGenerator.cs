@@ -14,6 +14,7 @@ namespace Preactor.Editor.DTS {
                 .Where(
                     t => (t.IsPublic || t.IsNestedPublic)
                         && (t.DeclaringType == null || t.DeclaringType.IsPublic)
+                        && t.Namespace != "PuertsStaticWrap"
                         && (namespaces == null || namespaces.Length == 0 || namespaces.Contains(t.Namespace))
                 )
                 .ToArray();
