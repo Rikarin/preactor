@@ -346,10 +346,17 @@ namespace Puerts.Editor
 
             public static void FillEnumInfo(Wrapper.DataTypeInfo info, Type type)
             {
-                if (type.IsEnum)
-                {
+                if (type.IsEnum) {
                     info.IsEnum = true;
                     info.UnderlyingTypeName = Enum.GetUnderlyingType(type).GetFriendlyName();
+                    return;
+                }
+
+                var underlyingType = Nullable.GetUnderlyingType(type);
+                if (underlyingType?.IsEnum == true) {
+                    info.IsEnum = true;
+                    info.IsNullable = true;
+                    info.UnderlyingTypeName = Enum.GetUnderlyingType(underlyingType).GetFriendlyName();
                 }
             }
 

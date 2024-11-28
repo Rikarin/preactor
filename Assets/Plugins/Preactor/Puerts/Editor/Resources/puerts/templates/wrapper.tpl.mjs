@@ -580,6 +580,10 @@ function setReturn(typeInfo) {
     let typeName = typeInfo.TypeName;
     if (typeName in fixReturn) {
         return fixReturn[typeName];
+    } else if (typeInfo.IsNullable && typeInfo.IsEnum) {
+        return 'if (result.HasValue) '
+            + fixReturn[typeInfo.UnderlyingTypeName].replace('result', `(${typeInfo.UnderlyingTypeName})result`)
+            + '; else Puerts.PuertsDLL.ReturnNull(isolate, info)';
     } else if (typeInfo.IsEnum) {
         return fixReturn[typeInfo.UnderlyingTypeName].replace('result', `(${typeInfo.UnderlyingTypeName})result`);
     } else {
