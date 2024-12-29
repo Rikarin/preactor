@@ -15,7 +15,7 @@ module.exports = () => {
         rule.selectors = rule.selectors.map(
           selector =>
             '.' +
-            selector.slice(1).replace(/(\\\.|\\#|\\%|\\:|\\\/|\\\[|\\\]|\\\(|\\\)|\\2c)/g, match => {
+            selector.slice(1).replace(/(\\\.|\\#|\\%|\\:|\\\/|\\\[|\\\]|\\\(|\\\)|\\2c|\\&|\\>|\\<|\\\*)/g, match => {
               switch (match) {
                 case '\\.':
                   return '_d_';
@@ -37,6 +37,14 @@ module.exports = () => {
                   return '_rp_';
                 case '\\2c':
                   return '_cm_';
+                case '\\&':
+                  return '_amp_';
+                case '\\>':
+                  return '_gt_';
+                case '\\<':
+                  return '_lt_';
+                case '\\*':
+                  return '_ast_';
                 default:
                   return match;
               }

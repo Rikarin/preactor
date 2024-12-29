@@ -7,14 +7,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 
 namespace Preactor {
     public class Dom {
         static readonly (string, string)[] ReplacePairsForClassNames = {
             (".", "_d_"), ("/", "_s_"), (":", "_c_"), ("%", "_p_"), ("#", "_n_"), ("[", "_lb_"), ("]", "_rb_"),
-            ("(", "_lp_"), (")", "_rp_"), (",", "_cm_")
+            ("(", "_lp_"), (")", "_rp_"), (",", "_cm_"), ("&", "_amp_"), (">", "_gt_"), ("<", "_lt_"), ("*", "_ast_")
         };
 
         object data;
@@ -332,7 +331,7 @@ namespace Preactor {
                 case "id":
                     VisualElement.name = null;
                     break;
-                
+
                 case "disabled":
                     VisualElement.SetEnabled(true);
                     break;

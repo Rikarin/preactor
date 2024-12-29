@@ -7,7 +7,7 @@ let oldDiffHook = (options as any)._diff;
     vnode.props.ref = vnode.ref;
     vnode.ref = null;
   }
-  
+
   oldDiffHook?.(vnode);
 };
 
