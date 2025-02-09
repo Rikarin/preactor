@@ -86,8 +86,8 @@ namespace Preactor {
 
         public void Shutdown() {
             if (JsEnv != null) {
-                JsEnv.Dispose();
                 OnDestroyed?.Invoke();
+                JsEnv.Dispose();
             }
 
             ClearVisualElement();

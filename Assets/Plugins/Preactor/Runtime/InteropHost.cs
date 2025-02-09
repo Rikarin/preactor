@@ -17,17 +17,24 @@ namespace Preactor {
 
         [JsInterop]
         public Action AddOrUpdateSubscribe(object store, object key, GenericDelegate handler) {
-            Action<object> callback = handler.Action;
-
             var args = store.GetType().BaseType!.GetGenericArguments();
             if (args.Length != 2) {
                 throw new NotSupportedException("Store should have 2 generic arguments");
             }
 
+            // Key can be either Enum or has to have TypeConverter defined
             var dicKey = args[0].IsEnum
                 ? Enum.Parse(args[0], key.ToString())
                 : TypeDescriptor.GetConverter(args[0]).ConvertFrom(key.ToString());
-            
+
+            // Value has to be either class type or int (Commander Gear is int (Level)
+            object callback;
+            if (args[1] == typeof(int)) {
+                callback = (Action<int>)handler.Action;
+            } else {
+                callback = (Action<object>)handler.Action;
+            }
+
             var methodInfo = store.GetType().GetMethod("AddOrUpdateSubscribe");
             if (methodInfo == null) {
                 throw new NotSupportedException("AddOrUpdateSubscribe method not found");
