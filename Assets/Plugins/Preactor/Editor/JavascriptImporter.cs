@@ -14,7 +14,8 @@ public class JavascriptImporter : ScriptedImporter {
             return;
         }
 
-        var subAsset = new TextAsset(res.Code);
+        // var subAsset = new TextAsset(res.Code);
+        var subAsset = new TextAsset(content);
         ctx.AddObjectToAsset("text", subAsset);
         ctx.SetMainObject(subAsset);
     }

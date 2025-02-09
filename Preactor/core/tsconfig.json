@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "typeRoots": ["./@types/**/*"],
-    "outDir": "dist",
+    "outDir": ".",
     "lib": ["esnext"],
     "target": "esnext",
     "module": "esnext",
