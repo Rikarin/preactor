@@ -43,7 +43,7 @@ export class DocumentWrapper {
 
   querySelectorAll(selector: string): DomWrapper[] {
     let doms = this.#doc.QuerySelectorAll(selector);
-    let res = [];
+    let res: DomWrapper[] = [];
 
     for (let i = 0; i < doms.Length; i++) {
       res.push(new DomWrapper(doms.get_Item(i)));

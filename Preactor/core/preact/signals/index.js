@@ -7,24 +7,25 @@ const HAS_HOOK_STATE = 1 << 1;
 const HAS_COMPUTEDS = 1 << 2;
 // Install a Preact options hook
 function hook(hookName, hookFn) {
-  // @ts-ignore-next-line private options hooks usage
-  options[hookName] = hookFn.bind(null, options[hookName] || (() => {}));
+    // @ts-ignore-next-line private options hooks usage
+    options[hookName] = hookFn.bind(null, options[hookName] || (() => { }));
 }
 let currentComponent;
 let finishUpdate;
 function setCurrentUpdater(updater) {
-  // end tracking for the current update:
-  if (finishUpdate) finishUpdate();
-  // start tracking the new update:
-  finishUpdate = updater && updater._start();
+    // end tracking for the current update:
+    if (finishUpdate)
+        finishUpdate();
+    // start tracking the new update:
+    finishUpdate = updater && updater._start();
 }
 function createUpdater(update) {
-  let updater;
-  effect(function () {
-    updater = this;
-  });
-  updater._callback = update;
-  return updater;
+    let updater;
+    effect(function () {
+        updater = this;
+    });
+    updater._callback = update;
+    return updater;
 }
 /** @todo This may be needed for complex prop value detection. */
 // function isSignalValue(value: any): value is Signal {
@@ -39,254 +40,269 @@ function createUpdater(update) {
  * @todo: in Preact 11, just decorate Signal with `type:null`
  */
 function SignalValue({ data }) {
-  // hasComputeds.add(this);
-  // Store the props.data signal in another signal so that
-  // passing a new signal reference re-runs the text computed:
-  const currentSignal = useSignal(data);
-  currentSignal.value = data;
-  const s = useMemo(() => {
-    // mark the parent component as having computeds so it gets optimized
-    let v = this.__v;
-    while ((v = v.__)) {
-      if (v.__c) {
-        v.__c._updateFlags |= HAS_COMPUTEDS;
-        break;
-      }
-    }
-    this._updater._callback = () => {
-      if (isValidElement(s.peek()) || this.base?.nodeType !== 3) {
-        this._updateFlags |= HAS_PENDING_UPDATE;
-        this.setState({});
-        return;
-      }
-      this.base.data = s.peek();
-    };
-    return computed(() => {
-      let data = currentSignal.value;
-      let s = data.value;
-      return s === 0 ? 0 : s === true ? '' : s || '';
-    });
-  }, []);
-  return s.value;
+    // hasComputeds.add(this);
+    // Store the props.data signal in another signal so that
+    // passing a new signal reference re-runs the text computed:
+    const currentSignal = useSignal(data);
+    currentSignal.value = data;
+    const s = useMemo(() => {
+        // mark the parent component as having computeds so it gets optimized
+        let v = this.__v;
+        while ((v = v.__)) {
+            if (v.__c) {
+                v.__c._updateFlags |= HAS_COMPUTEDS;
+                break;
+            }
+        }
+        this._updater._callback = () => {
+            if (isValidElement(s.peek()) || this.base?.nodeType !== 3) {
+                this._updateFlags |= HAS_PENDING_UPDATE;
+                this.setState({});
+                return;
+            }
+            this.base.data = s.peek();
+        };
+        return computed(() => {
+            let data = currentSignal.value;
+            let s = data.value;
+            return s === 0 ? 0 : s === true ? '' : s || '';
+        });
+    }, []);
+    return s.value;
 }
 SignalValue.displayName = '_st';
 Object.defineProperties(Signal.prototype, {
-  constructor: { configurable: true, value: undefined },
-  type: { configurable: true, value: SignalValue },
-  props: {
-    configurable: true,
-    get() {
-      return { data: this };
-    }
-  },
-  // Setting a VNode's _depth to 1 forces Preact to clone it before modifying:
-  // https://github.com/preactjs/preact/blob/d7a433ee8463a7dc23a05111bb47de9ec729ad4d/src/diff/children.js#L77
-  // @todo remove this for Preact 11
-  __b: { configurable: true, value: 1 }
+    constructor: { configurable: true, value: undefined },
+    type: { configurable: true, value: SignalValue },
+    props: {
+        configurable: true,
+        get() {
+            return { data: this };
+        }
+    },
+    // Setting a VNode's _depth to 1 forces Preact to clone it before modifying:
+    // https://github.com/preactjs/preact/blob/d7a433ee8463a7dc23a05111bb47de9ec729ad4d/src/diff/children.js#L77
+    // @todo remove this for Preact 11
+    __b: { configurable: true, value: 1 }
 });
 /** Inject low-level property/attribute bindings for Signals into Preact's diff */
-hook('__b' /* OptionsTypes.DIFF */, (old, vnode) => {
-  if (typeof vnode.type === 'string') {
-    let signalProps;
-    let props = vnode.props;
-    for (let i in props) {
-      if (i === 'children') continue;
-      let value = props[i];
-      if (value instanceof Signal) {
-        if (!signalProps) vnode.__np = signalProps = {};
-        signalProps[i] = value;
-        props[i] = value.peek();
-      }
+hook("__b" /* OptionsTypes.DIFF */, (old, vnode) => {
+    if (typeof vnode.type === 'string') {
+        let signalProps;
+        let props = vnode.props;
+        for (let i in props) {
+            if (i === 'children')
+                continue;
+            let value = props[i];
+            if (value instanceof Signal) {
+                if (!signalProps)
+                    vnode.__np = signalProps = {};
+                signalProps[i] = value;
+                props[i] = value.peek();
+            }
+        }
     }
-  }
-  old(vnode);
+    old(vnode);
 });
 /** Set up Updater before rendering a component */
-hook('__r' /* OptionsTypes.RENDER */, (old, vnode) => {
-  setCurrentUpdater();
-  let updater;
-  let component = vnode.__c;
-  if (component) {
-    component._updateFlags &= ~HAS_PENDING_UPDATE;
-    updater = component._updater;
-    if (updater === undefined) {
-      component._updater = updater = createUpdater(() => {
-        component._updateFlags |= HAS_PENDING_UPDATE;
-        component.setState({});
-      });
-    }
-  }
-  currentComponent = component;
-  setCurrentUpdater(updater);
-  old(vnode);
-});
-/** Finish current updater if a component errors */
-hook('__e' /* OptionsTypes.CATCH_ERROR */, (old, error, vnode, oldVNode) => {
-  setCurrentUpdater();
-  currentComponent = undefined;
-  old(error, vnode, oldVNode);
-});
-/** Finish current updater after rendering any VNode */
-hook('diffed' /* OptionsTypes.DIFFED */, (old, vnode) => {
-  setCurrentUpdater();
-  currentComponent = undefined;
-  let dom;
-  // vnode._dom is undefined during string rendering,
-  // so we use this to skip prop subscriptions during SSR.
-  if (typeof vnode.type === 'string' && (dom = vnode.__e)) {
-    let props = vnode.__np;
-    let renderedProps = vnode.props;
-    if (props) {
-      let updaters = dom._updaters;
-      if (updaters) {
-        for (let prop in updaters) {
-          let updater = updaters[prop];
-          if (updater !== undefined && !(prop in props)) {
-            updater._dispose();
-            // @todo we could just always invoke _dispose() here
-            updaters[prop] = undefined;
-          }
-        }
-      } else {
-        updaters = {};
-        dom._updaters = updaters;
-      }
-      for (let prop in props) {
-        let updater = updaters[prop];
-        let signal = props[prop];
-        if (updater === undefined) {
-          updater = createPropUpdater(dom, prop, signal, renderedProps);
-          updaters[prop] = updater;
-        } else {
-          updater._update(signal, renderedProps);
-        }
-      }
-    }
-  }
-  old(vnode);
-});
-function createPropUpdater(dom, prop, propSignal, props) {
-  const setAsProperty =
-    prop in dom &&
-    // SVG elements need to go through `setAttribute` because they
-    // expect things like SVGAnimatedTransformList instead of strings.
-    // @ts-ignore
-    dom.ownerSVGElement === undefined;
-  const changeSignal = signal(propSignal);
-  return {
-    _update: (newSignal, newProps) => {
-      changeSignal.value = newSignal;
-      props = newProps;
-    },
-    _dispose: effect(() => {
-      const value = changeSignal.value.value;
-      // If Preact just rendered this value, don't render it again:
-      if (props[prop] === value) return;
-      props[prop] = value;
-      if (setAsProperty) {
-        // @ts-ignore-next-line silly
-        dom[prop] = value;
-      } else if (value) {
-        // @ts-ignore
-        dom.setAttribute(prop, value);
-      } else {
-        // @ts-ignore
-        dom.removeAttribute(prop);
-      }
-    })
-  };
-}
-/** Unsubscribe from Signals when unmounting components/vnodes */
-hook('unmount' /* OptionsTypes.UNMOUNT */, (old, vnode) => {
-  if (typeof vnode.type === 'string') {
-    let dom = vnode.__e;
-    // vnode._dom is undefined during string rendering
-    if (dom) {
-      const updaters = dom._updaters;
-      if (updaters) {
-        dom._updaters = undefined;
-        for (let prop in updaters) {
-          let updater = updaters[prop];
-          if (updater) updater._dispose();
-        }
-      }
-    }
-  } else {
+hook("__r" /* OptionsTypes.RENDER */, (old, vnode) => {
+    setCurrentUpdater();
+    let updater;
     let component = vnode.__c;
     if (component) {
-      const updater = component._updater;
-      if (updater) {
-        component._updater = undefined;
-        updater._dispose();
-      }
+        component._updateFlags &= ~HAS_PENDING_UPDATE;
+        updater = component._updater;
+        if (updater === undefined) {
+            component._updater = updater = createUpdater(() => {
+                component._updateFlags |= HAS_PENDING_UPDATE;
+                component.setState({});
+            });
+        }
     }
-  }
-  old(vnode);
+    currentComponent = component;
+    setCurrentUpdater(updater);
+    old(vnode);
+});
+/** Finish current updater if a component errors */
+hook("__e" /* OptionsTypes.CATCH_ERROR */, (old, error, vnode, oldVNode) => {
+    setCurrentUpdater();
+    currentComponent = undefined;
+    old(error, vnode, oldVNode);
+});
+/** Finish current updater after rendering any VNode */
+hook("diffed" /* OptionsTypes.DIFFED */, (old, vnode) => {
+    setCurrentUpdater();
+    currentComponent = undefined;
+    let dom;
+    // vnode._dom is undefined during string rendering,
+    // so we use this to skip prop subscriptions during SSR.
+    if (typeof vnode.type === 'string' && (dom = vnode.__e)) {
+        let props = vnode.__np;
+        let renderedProps = vnode.props;
+        if (props) {
+            let updaters = dom._updaters;
+            if (updaters) {
+                for (let prop in updaters) {
+                    let updater = updaters[prop];
+                    if (updater !== undefined && !(prop in props)) {
+                        updater._dispose();
+                        // @todo we could just always invoke _dispose() here
+                        updaters[prop] = undefined;
+                    }
+                }
+            }
+            else {
+                updaters = {};
+                dom._updaters = updaters;
+            }
+            for (let prop in props) {
+                let updater = updaters[prop];
+                let signal = props[prop];
+                if (updater === undefined) {
+                    updater = createPropUpdater(dom, prop, signal, renderedProps);
+                    updaters[prop] = updater;
+                }
+                else {
+                    updater._update(signal, renderedProps);
+                }
+            }
+        }
+    }
+    old(vnode);
+});
+function createPropUpdater(dom, prop, propSignal, props) {
+    const setAsProperty = prop in dom &&
+        // SVG elements need to go through `setAttribute` because they
+        // expect things like SVGAnimatedTransformList instead of strings.
+        // @ts-ignore
+        dom.ownerSVGElement === undefined;
+    const changeSignal = signal(propSignal);
+    return {
+        _update: (newSignal, newProps) => {
+            changeSignal.value = newSignal;
+            props = newProps;
+        },
+        _dispose: effect(() => {
+            const value = changeSignal.value.value;
+            // If Preact just rendered this value, don't render it again:
+            if (props[prop] === value)
+                return;
+            props[prop] = value;
+            if (setAsProperty) {
+                // @ts-ignore-next-line silly
+                dom[prop] = value;
+            }
+            else if (value) {
+                // @ts-ignore
+                dom.setAttribute(prop, value);
+            }
+            else {
+                // @ts-ignore
+                dom.removeAttribute(prop);
+            }
+        })
+    };
+}
+/** Unsubscribe from Signals when unmounting components/vnodes */
+hook("unmount" /* OptionsTypes.UNMOUNT */, (old, vnode) => {
+    if (typeof vnode.type === 'string') {
+        let dom = vnode.__e;
+        // vnode._dom is undefined during string rendering
+        if (dom) {
+            const updaters = dom._updaters;
+            if (updaters) {
+                dom._updaters = undefined;
+                for (let prop in updaters) {
+                    let updater = updaters[prop];
+                    if (updater)
+                        updater._dispose();
+                }
+            }
+        }
+    }
+    else {
+        let component = vnode.__c;
+        if (component) {
+            const updater = component._updater;
+            if (updater) {
+                component._updater = undefined;
+                updater._dispose();
+            }
+        }
+    }
+    old(vnode);
 });
 /** Mark components that use hook state so we can skip sCU optimization. */
-hook('__h' /* OptionsTypes.HOOK */, (old, component, index, type) => {
-  if (type < 3 || type === 9) component._updateFlags |= HAS_HOOK_STATE;
-  old(component, index, type);
+hook("__h" /* OptionsTypes.HOOK */, (old, component, index, type) => {
+    if (type < 3 || type === 9)
+        component._updateFlags |= HAS_HOOK_STATE;
+    old(component, index, type);
 });
 /**
  * Auto-memoize components that use Signals/Computeds.
  * Note: Does _not_ optimize components that use hook/class state.
  */
 Component.prototype.shouldComponentUpdate = function (props, state) {
-  // @todo: Once preactjs/preact#3671 lands, this could just use `currentUpdater`:
-  const updater = this._updater;
-  const hasSignals = updater && updater._sources !== undefined;
-  // let reason;
-  // if (!hasSignals && !hasComputeds.has(this)) {
-  // 	reason = "no signals or computeds";
-  // } else if (hasPendingUpdate.has(this)) {
-  // 	reason = "has pending update";
-  // } else if (hasHookState.has(this)) {
-  // 	reason = "has hook state";
-  // }
-  // if (reason) {
-  // 	if (!this) reason += " (`this` bug)";
-  // 	console.log("not optimizing", this?.constructor?.name, ": ", reason, {
-  // 		details: {
-  // 			hasSignals,
-  // 			hasComputeds: hasComputeds.has(this),
-  // 			hasPendingUpdate: hasPendingUpdate.has(this),
-  // 			hasHookState: hasHookState.has(this),
-  // 			deps: Array.from(updater._deps),
-  // 			updater,
-  // 		},
-  // 	});
-  // }
-  // if this component used no signals or computeds, update:
-  if (!hasSignals && !(this._updateFlags & HAS_COMPUTEDS)) return true;
-  // if there is a pending re-render triggered from Signals,
-  // or if there is hook or class state, update:
-  if (this._updateFlags & (HAS_PENDING_UPDATE | HAS_HOOK_STATE)) return true;
-  // @ts-ignore
-  for (let i in state) return true;
-  // if any non-Signal props changed, update:
-  for (let i in props) {
-    if (i !== '__source' && props[i] !== this.props[i]) return true;
-  }
-  for (let i in this.props) if (!(i in props)) return true;
-  // this is a purely Signal-driven component, don't update:
-  return false;
+    // @todo: Once preactjs/preact#3671 lands, this could just use `currentUpdater`:
+    const updater = this._updater;
+    const hasSignals = updater && updater._sources !== undefined;
+    // let reason;
+    // if (!hasSignals && !hasComputeds.has(this)) {
+    // 	reason = "no signals or computeds";
+    // } else if (hasPendingUpdate.has(this)) {
+    // 	reason = "has pending update";
+    // } else if (hasHookState.has(this)) {
+    // 	reason = "has hook state";
+    // }
+    // if (reason) {
+    // 	if (!this) reason += " (`this` bug)";
+    // 	console.log("not optimizing", this?.constructor?.name, ": ", reason, {
+    // 		details: {
+    // 			hasSignals,
+    // 			hasComputeds: hasComputeds.has(this),
+    // 			hasPendingUpdate: hasPendingUpdate.has(this),
+    // 			hasHookState: hasHookState.has(this),
+    // 			deps: Array.from(updater._deps),
+    // 			updater,
+    // 		},
+    // 	});
+    // }
+    // if this component used no signals or computeds, update:
+    if (!hasSignals && !(this._updateFlags & HAS_COMPUTEDS))
+        return true;
+    // if there is a pending re-render triggered from Signals,
+    // or if there is hook or class state, update:
+    if (this._updateFlags & (HAS_PENDING_UPDATE | HAS_HOOK_STATE))
+        return true;
+    // @ts-ignore
+    for (let i in state)
+        return true;
+    // if any non-Signal props changed, update:
+    for (let i in props) {
+        if (i !== '__source' && props[i] !== this.props[i])
+            return true;
+    }
+    for (let i in this.props)
+        if (!(i in props))
+            return true;
+    // this is a purely Signal-driven component, don't update:
+    return false;
 };
 export function useSignal(value) {
-  return useMemo(() => signal(value), []);
+    return useMemo(() => signal(value), []);
 }
 export function useComputed(compute) {
-  const $compute = useRef(compute);
-  $compute.current = compute;
-  currentComponent._updateFlags |= HAS_COMPUTEDS;
-  return useMemo(() => computed(() => $compute.current()), []);
+    const $compute = useRef(compute);
+    $compute.current = compute;
+    currentComponent._updateFlags |= HAS_COMPUTEDS;
+    return useMemo(() => computed(() => $compute.current()), []);
 }
 export function useSignalEffect(cb) {
-  const callback = useRef(cb);
-  callback.current = cb;
-  useEffect(() => {
-    return effect(() => callback.current());
-  }, []);
+    const callback = useRef(cb);
+    callback.current = cb;
+    useEffect(() => {
+        return effect(() => callback.current());
+    }, []);
 }
 /**
  * @todo Determine which Reactive implementation we'll be using.

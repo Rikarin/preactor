@@ -1,4 +1,3 @@
-using NUglify;
 using System.IO;
 using UnityEditor.AssetImporters;
 using UnityEngine;
@@ -7,12 +6,12 @@ using UnityEngine;
 public class JavascriptImporter : ScriptedImporter {
     public override void OnImportAsset(AssetImportContext ctx) {
         var content = File.ReadAllText(ctx.assetPath);
-        var res = Uglify.Js(content);
-        
-        if (res.HasErrors) {
-            Debug.LogError($"Cannot uglify {ctx.assetPath}\n\n" + string.Join("\n\n", res.Errors));
-            return;
-        }
+        // var res = Uglify.Js(content);
+
+        // if (res.HasErrors) {
+        //     Debug.LogError($"Cannot uglify {ctx.assetPath}\n\n" + string.Join("\n\n", res.Errors));
+        //     return;
+        // }
 
         // var subAsset = new TextAsset(res.Code);
         var subAsset = new TextAsset(content);
