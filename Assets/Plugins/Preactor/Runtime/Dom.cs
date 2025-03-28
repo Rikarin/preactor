@@ -13,7 +13,8 @@ namespace Preactor {
     public class Dom {
         static readonly (string, string)[] ReplacePairsForClassNames = {
             (".", "_d_"), ("/", "_s_"), (":", "_c_"), ("%", "_p_"), ("#", "_n_"), ("[", "_lb_"), ("]", "_rb_"),
-            ("(", "_lp_"), (")", "_rp_"), (",", "_cm_"), ("&", "_amp_"), (">", "_gt_"), ("<", "_lt_"), ("*", "_ast_")
+            ("(", "_lp_"), (")", "_rp_"), (",", "_cm_"), ("&", "_amp_"), (">", "_gt_"), ("<", "_lt_"), ("*", "_ast_"),
+            ("'", "_sq_")
         };
 
         object data;
@@ -233,12 +234,12 @@ namespace Preactor {
                 return;
             }
 
-            if (a == b) {
+            if (b?.VisualElement == null || VisualElement.IndexOf(b.VisualElement) == -1) {
+                AppendChild(a);
                 return;
             }
 
-            if (b?.VisualElement == null || VisualElement.IndexOf(b.VisualElement) == -1) {
-                AppendChild(a);
+            if (a == b) {
                 return;
             }
 

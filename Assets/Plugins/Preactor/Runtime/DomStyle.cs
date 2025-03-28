@@ -15,8 +15,86 @@ namespace Preactor {
 
         public IStyle VisualElementStyle => dom.VisualElement.style;
 
+
+        public object transform {
+            get => $"{VisualElementStyle.translate} {VisualElementStyle.scale} {VisualElementStyle.rotate}";
+            set {
+                if (value is string s) {
+                    var regex = new Regex(@"(\w+)\(([^)]+)\)");
+                    var matches = regex.Matches(s);
+                    foreach (Match match in matches) {
+                        var transformType = match.Groups[1].Value.ToLower();
+                        var transformValue = match.Groups[2].Value;
+
+                        switch (transformType) {
+                            case "translate":
+                                if (TryParseStyleTranslate(transformValue, out var translateValue)) {
+                                    VisualElementStyle.translate = translateValue;
+                                }
+
+                                break;
+                            case "scale":
+                                if (TryParseStyleScale(transformValue, out var scaleValue)) {
+                                    VisualElementStyle.scale = scaleValue;
+                                }
+
+                                break;
+                            case "rotate":
+                                if (TryParseStyleRotate(transformValue, out var rotateValue)) {
+                                    VisualElementStyle.rotate = rotateValue;
+                                }
+
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public object transition {
+            get =>
+                $"{VisualElementStyle.transitionProperty} {VisualElementStyle.transitionDuration} {VisualElementStyle.transitionTimingFunction}";
+            set {
+                if (value is string s) {
+                    var transitions = s.Split(',');
+
+                    var properties = new List<StylePropertyName>();
+                    var durations = new List<TimeValue>();
+                    var easingFunctions = new List<EasingFunction>();
+
+                    foreach (var transition in transitions) {
+                        var parts = transition.Trim().Split(' ');
+                        if (parts.Length < 2) {
+                            continue;
+                        }
+
+                        properties.Add(new(parts[0]));
+
+                        if (TryParseStyleListTimeValue(parts[1], out var duration)) {
+                            durations.AddRange(duration.value);
+                        }
+
+                        if (parts.Length > 2 && TryParseStyleListEasingFunction(parts[2], out var easing)) {
+                            easingFunctions.AddRange(easing.value);
+                        }
+                    }
+
+                    VisualElementStyle.transitionProperty = new(properties);
+                    VisualElementStyle.transitionDuration = new(durations);
+                    VisualElementStyle.transitionTimingFunction = new(easingFunctions);
+                }
+            }
+        }
+
         public DomStyle(Dom dom) {
             this.dom = dom;
+        }
+
+        [JsInterop]
+        public object GetProperty(string key) {
+            // TODO cache this
+            var pi = GetType().GetProperty(key, BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public);
+            return pi != null ? pi.GetValue(this) : null;
         }
 
         [JsInterop]
@@ -813,6 +891,7 @@ namespace Preactor {
         }
 
         #endregion
+
 
         #region ParseStyles
 
@@ -1932,19 +2011,19 @@ namespace Preactor {
                 case string ss when Enum.TryParse(ss, true, out StyleKeyword keyword):
                     styleTranslate = new(keyword);
                     return true;
-                
+
                 case null:
                     styleTranslate = new(StyleKeyword.Null);
                     return true;
-                
+
                 case Translate translate:
                     styleTranslate = translate;
-                    break;
-                
+                    return true;
+
                 case StyleTranslate st:
                     styleTranslate = st;
                     return true;
-                
+
                 case string s: {
                     var parts = s.Split(new[] { ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries);
                     switch (parts.Length) {
@@ -1958,19 +2037,19 @@ namespace Preactor {
 
                     break;
                 }
-                
+
                 case double d:
                     styleTranslate = new(new Translate((float)d, (float)d));
                     return true;
-                
+
                 case Vector2 v2:
                     styleTranslate = new(new Translate(v2.x, v2.y));
                     return true;
-                
+
                 case Vector3 v3:
                     styleTranslate = new(new Translate(v3.x, v3.y));
                     return true;
-                
+
                 case JSObject jsObj when jsObj.Get<int>("length") == 2: {
                     var x = jsObj.Get<float>("0");
                     var y = jsObj.Get<float>("1");
@@ -2065,6 +2144,7 @@ namespace Preactor {
                         styleInt = new(int.Parse(match.Groups[1].Value));
                         return true;
                     }
+
                     break;
             }
 

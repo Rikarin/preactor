@@ -10,21 +10,24 @@ using Object = UnityEngine.Object;
 
 namespace Preactor {
     public class Document {
+        static readonly Dictionary<string, Type> TagCache = new();
+        public static readonly Dictionary<string, Type> EventBaseCache = new();
+
         readonly List<StyleSheet> runtimeStyleSheets = new();
         readonly Dictionary<VisualElement, Dom> elementToDomLookup = new();
-        readonly Dictionary<string, Type> tagCache = new();
 
         public IScriptEngine ScriptEngine { get; }
         public Dom Body { get; }
-        public Dictionary<string, Type> EventBaseCache { get; } = new();
         public VisualElement Root => Body.VisualElement;
+
+        static Document() {
+            CollectAllVisualElementTypes();
+            PreCacheEventBase();
+        }
 
         public Document(VisualElement root, IScriptEngine scriptEngine) {
             Body = new(root, this);
             ScriptEngine = scriptEngine;
-
-            CollectAllVisualElementTypes();
-            PreCacheEventBase();
         }
 
         [JsInterop]
@@ -58,7 +61,7 @@ namespace Preactor {
 
         [JsInterop]
         public Dom CreateElement(string tagName) {
-            if (tagCache.TryGetValue(tagName, out var type)) {
+            if (TagCache.TryGetValue(tagName, out var type)) {
                 return new(Activator.CreateInstance(type) as VisualElement, this);
             }
 
@@ -89,7 +92,7 @@ namespace Preactor {
         public FontDefinition LoadFontDefinition(string path) =>
             FontDefinition.FromFont(ScriptEngine.ContentProvider.LoadFont(path));
 
-        void PreCacheEventBase() {
+        static void PreCacheEventBase() {
             var eventTypes = typeof(VisualElement)
                 .Assembly
                 .GetTypes()
@@ -105,7 +108,7 @@ namespace Preactor {
             }
         }
 
-        void CollectAllVisualElementTypes() {
+        static void CollectAllVisualElementTypes() {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies) {
                 Type[] types;
@@ -118,10 +121,12 @@ namespace Preactor {
 
                 foreach (var type in types) {
                     if (type.IsSubclassOf(typeof(VisualElement))) {
-                        tagCache[type.Name.ToLower()] = type;
+                        TagCache[type.Name.ToLower()] = type;
                     }
                 }
             }
+
+            Debug.Log($"Collected {TagCache.Count} VisualElement types");
         }
 
         internal void AddCachingDom(Dom dom) {
