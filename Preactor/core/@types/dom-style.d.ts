@@ -59,7 +59,7 @@ type WhiteSpace = CS.UnityEngine.UIElements.WhiteSpace;
 type TextOverflowPosition = CS.UnityEngine.UIElements.TextOverflowPosition;
 
 declare namespace CS.Preactor {
-  interface DomStyle {
+  interface DomStyleWrapper {
     alignContent: StyleEnum<Align> | Align | string | null | number;
     alignItems: StyleEnum<Align> | Align | string | null | number;
     alignSelf: StyleEnum<Align> | Align | string | null | number;

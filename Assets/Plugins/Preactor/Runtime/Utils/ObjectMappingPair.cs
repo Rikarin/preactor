@@ -9,7 +9,7 @@ namespace Preactor.Utils {
 
         public ObjectMappingPair(Object obj, string name) {
             this.obj = obj;
-            name = name;
+            this.name = name;
         }
     }
 }

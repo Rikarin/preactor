@@ -127,6 +127,7 @@ namespace Preactor {
             var addToGlobal = JsEnv.Eval<Action<string, object>>("__addToGlobal");
             addToGlobal("__document", new Document(uiDocument.rootVisualElement, this));
             addToGlobal("interop", new InteropHost(this));
+            addToGlobal("gameObject", gameObject);
 
             foreach (var obj in GlobalObjects) {
                 addToGlobal(obj.name, obj.obj);
