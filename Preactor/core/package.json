@@ -7,8 +7,8 @@
     "url": "git+https://github.com/rikarin/preactor.git"
   },
   "version": "0.0.22",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
+  "main": "./index.js",
+  "module": "./index.js",
   "types": "./typings.d.ts",
   "scripts": {
     "clean": "rm -rf dist",

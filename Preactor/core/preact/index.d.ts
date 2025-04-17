@@ -1,6 +1,6 @@
 export as namespace preact;
 
-import { JSXInternal } from './jsx';
+import { JSX as JSXInternal } from './jsx';
 
 export import JSX = JSXInternal;
 
@@ -150,11 +150,6 @@ export abstract class Component<P, S> {
 // Preact createElement
 // -----------------------------------
 
-export function createElement(
-  type: 'input',
-  props: (JSXInternal.DOMAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>) | null,
-  ...children: ComponentChildren[]
-): VNode<JSXInternal.DOMAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>>;
 export function createElement<P extends JSXInternal.HTMLAttributes<T>, T extends HTMLElement>(
   type: keyof JSXInternal.IntrinsicElements,
   props: (ClassAttributes<T> & P) | null,
@@ -179,11 +174,6 @@ export namespace createElement {
   export import JSX = JSXInternal;
 }
 
-export function h(
-  type: 'input',
-  props: (JSXInternal.DOMAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>) | null,
-  ...children: ComponentChildren[]
-): VNode<JSXInternal.DOMAttributes<HTMLInputElement> & ClassAttributes<HTMLInputElement>>;
 export function h<P extends JSXInternal.HTMLAttributes<T>, T extends HTMLElement>(
   type: keyof JSXInternal.IntrinsicElements,
   props: (ClassAttributes<T> & P) | null,
@@ -211,26 +201,8 @@ export namespace h {
 //
 // Preact render
 // -----------------------------------
-interface ContainerNode {
-  readonly nodeType: number;
-  readonly parentNode: ContainerNode | null;
-  readonly firstChild: ContainerNode | null;
-  readonly childNodes: ArrayLike<ContainerNode>;
 
-  contains(other: ContainerNode | null): boolean;
-  insertBefore(node: ContainerNode, child: ContainerNode | null): ContainerNode;
-  appendChild(node: ContainerNode): ContainerNode;
-  removeChild(child: ContainerNode): ContainerNode;
-}
-
-export function render(vnode: ComponentChild, parent: ContainerNode): void;
-/**
- * @deprecated Will be removed in v11.
- *
- * Replacement Preact 10+ implementation can be found here: https://gist.github.com/developit/f4c67a2ede71dc2fab7f357f39cff28c
- */
-export function render(vnode: ComponentChild, parent: ContainerNode, replaceNode?: Element | Text): void;
-export function hydrate(vnode: ComponentChild, parent: ContainerNode): void;
+export function render(vnode: ComponentChild, parent: Element): void;
 export function cloneElement(vnode: VNode<any>, props?: any, ...children: ComponentChildren[]): VNode<any>;
 export function cloneElement<P>(vnode: VNode<P>, props?: any, ...children: ComponentChildren[]): VNode<P>;
 

@@ -134,7 +134,7 @@ export class DomWrapper {
     const boundListener = this.#boundListeners.get(listener);
 
     if (boundListener) {
-      this.#dom.RemoveEventListener(type, listener.bind(this), useCapture);
+      this.#dom.RemoveEventListener(type, boundListener, useCapture);
       this.#boundListeners.delete(listener);
     }
   }

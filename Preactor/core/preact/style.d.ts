@@ -24,6 +24,7 @@ declare module 'preact/jsx' {
   type TextShadowInfo = { offset: float2 | number[]; blurRadius: number; color: ColorInfo };
   type CursorInfo = { hotspot: float2 | number[]; texture: Texture2D };
 
+  // TODO: is this still needed?
   // CS.UnityEngine.UIElements.IStyle
   export type Style = {
     alignContent?: keyof typeof Align;

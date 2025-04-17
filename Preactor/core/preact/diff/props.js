@@ -161,6 +161,7 @@ function createEventProxy(useCapture) {
         // if (eventHandler == null || dispatchTime < eventHandler?._attached) {
         return;
       }
+
       return eventHandler(options.event ? options.event(e) : e);
     }
   };

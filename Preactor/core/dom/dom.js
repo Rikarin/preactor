@@ -98,19 +98,14 @@ export class DomWrapper {
     return this.#dom.Contains(element.#dom);
   }
   addEventListener(type, listener, useCapture) {
-    // if (type == 'Click')
-    // console.log('add listener', type);
     let boundListener = this.#boundListeners.get(listener);
     if (!boundListener) {
-      const boundListener = listener.bind(this);
+      boundListener = listener.bind(this);
       this.#boundListeners.set(listener, boundListener);
     }
-
     this.#dom.AddEventListener(type, listener.bind(this), useCapture);
   }
   removeEventListener(type, listener, useCapture) {
-    // if (type == 'Click')
-    // console.log('remove listener', type);
     const boundListener = this.#boundListeners.get(listener);
     if (boundListener) {
       this.#dom.RemoveEventListener(type, boundListener, useCapture);
