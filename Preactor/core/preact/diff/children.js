@@ -1,8 +1,15 @@
 import { diff, unmount, applyRef } from './index';
 import { createVNode, Fragment } from '../create-element';
-import { EMPTY_OBJ, EMPTY_ARR, INSERT_VNODE, MATCHED } from '../constants';
+import { EMPTY_OBJ, EMPTY_ARR, INSERT_VNODE, MATCHED, UNDEFINED, NULL } from '../constants';
 import { isArray } from '../util';
 import { getDomSibling } from '../component';
+
+/**
+ * @typedef {import('../internal').ComponentChildren} ComponentChildren
+ * @typedef {import('../internal').Component} Component
+ * @typedef {import('../internal').PreactElement} PreactElement
+ * @typedef {import('../internal').VNode} VNode
+ */
 
 /**
  * Diff the children of a virtual node
@@ -56,17 +63,15 @@ export function diffChildren(
 
   let newChildrenLength = renderResult.length;
 
-  newParentVNode._nextDom = oldDom;
-  constructNewChildrenArray(newParentVNode, renderResult, oldChildren);
-  oldDom = newParentVNode._nextDom;
+  oldDom = constructNewChildrenArray(newParentVNode, renderResult, oldChildren, oldDom, newChildrenLength);
 
   for (i = 0; i < newChildrenLength; i++) {
     childVNode = newParentVNode._children[i];
-    if (childVNode == null) continue;
+    if (childVNode == NULL) continue;
 
     // At this point, constructNewChildrenArray has assigned _index to be the
     // matchingIndex for this VNode's oldVNode (or -1 if there is no oldVNode).
-    if (childVNode._index === -1) {
+    if (childVNode._index == -1) {
       oldVNode = EMPTY_OBJ;
     } else {
       oldVNode = oldChildren[childVNode._index] || EMPTY_OBJ;
@@ -76,7 +81,7 @@ export function diffChildren(
     childVNode._index = i;
 
     // Morph the old element into the new one, but don't append it to the dom yet
-    diff(
+    let result = diff(
       parentDom,
       childVNode,
       oldVNode,
@@ -93,49 +98,30 @@ export function diffChildren(
     newDom = childVNode._dom;
     if (childVNode.ref && oldVNode.ref != childVNode.ref) {
       if (oldVNode.ref) {
-        applyRef(oldVNode.ref, null, childVNode);
+        applyRef(oldVNode.ref, NULL, childVNode);
       }
       refQueue.push(childVNode.ref, childVNode._component || newDom, childVNode);
     }
 
-    if (firstChildDom == null && newDom != null) {
+    if (firstChildDom == NULL && newDom != NULL) {
       firstChildDom = newDom;
     }
 
     if (childVNode._flags & INSERT_VNODE || oldVNode._children === childVNode._children) {
       oldDom = insert(childVNode, oldDom, parentDom);
-    } else if (typeof childVNode.type == 'function' && childVNode._nextDom !== undefined) {
-      // Since Fragments or components that return Fragment like VNodes can
-      // contain multiple DOM nodes as the same level, continue the diff from
-      // the sibling of last DOM child of this child VNode
-      oldDom = childVNode._nextDom;
+    } else if (typeof childVNode.type == 'function' && result !== UNDEFINED) {
+      oldDom = result;
     } else if (newDom) {
       oldDom = newDom.nextSibling;
     }
-
-    // Eagerly cleanup _nextDom. We don't need to persist the value because it
-    // is only used by `diffChildren` to determine where to resume the diff
-    // after diffing Components and Fragments. Once we store it the nextDOM
-    // local var, we can clean up the property. Also prevents us hanging on to
-    // DOM nodes that may have been unmounted.
-    childVNode._nextDom = undefined;
 
     // Unset diffing flags
     childVNode._flags &= ~(INSERT_VNODE | MATCHED);
   }
 
-  // TODO: With new child diffing algo, consider alt ways to diff Fragments.
-  // Such as dropping oldDom and moving fragments in place
-  //
-  // Because the newParentVNode is Fragment-like, we need to set it's
-  // _nextDom property to the nextSibling of its last child DOM node.
-  //
-  // `oldDom` contains the correct value here because if the last child
-  // is a Fragment-like, then oldDom has already been set to that child's _nextDom.
-  // If the last child is a DOM VNode, then oldDom will be set to that DOM
-  // node's nextSibling.
-  newParentVNode._nextDom = oldDom;
   newParentVNode._dom = firstChildDom;
+
+  return oldDom;
 }
 
 /**
@@ -143,7 +129,7 @@ export function diffChildren(
  * @param {ComponentChildren[]} renderResult
  * @param {VNode[]} oldChildren
  */
-function constructNewChildrenArray(newParentVNode, renderResult, oldChildren) {
+function constructNewChildrenArray(newParentVNode, renderResult, oldChildren, oldDom, newChildrenLength) {
   /** @type {number} */
   let i;
   /** @type {VNode} */
@@ -151,20 +137,19 @@ function constructNewChildrenArray(newParentVNode, renderResult, oldChildren) {
   /** @type {VNode} */
   let oldVNode;
 
-  const newChildrenLength = renderResult.length;
   let oldChildrenLength = oldChildren.length,
     remainingOldChildren = oldChildrenLength;
 
   let skew = 0;
 
-  newParentVNode._children = [];
+  newParentVNode._children = new Array(newChildrenLength);
   for (i = 0; i < newChildrenLength; i++) {
     // @ts-expect-error We are reusing the childVNode variable to hold both the
     // pre and post normalized childVNode
     childVNode = renderResult[i];
 
-    if (childVNode == null || typeof childVNode == 'boolean' || typeof childVNode == 'function') {
-      childVNode = newParentVNode._children[i] = null;
+    if (childVNode == NULL || typeof childVNode == 'boolean' || typeof childVNode == 'function') {
+      newParentVNode._children[i] = NULL;
       continue;
     }
     // If this newVNode is being reused (e.g. <div>{reuse}{reuse}</div>) in the same diff,
@@ -177,10 +162,10 @@ function constructNewChildrenArray(newParentVNode, renderResult, oldChildren) {
       typeof childVNode == 'bigint' ||
       childVNode.constructor == String
     ) {
-      childVNode = newParentVNode._children[i] = createVNode(null, childVNode, null, null, null);
+      childVNode = newParentVNode._children[i] = createVNode(NULL, childVNode, NULL, NULL, NULL);
     } else if (isArray(childVNode)) {
-      childVNode = newParentVNode._children[i] = createVNode(Fragment, { children: childVNode }, null, null, null);
-    } else if (childVNode.constructor === undefined && childVNode._depth > 0) {
+      childVNode = newParentVNode._children[i] = createVNode(Fragment, { children: childVNode }, NULL, NULL, NULL);
+    } else if (childVNode.constructor == UNDEFINED && childVNode._depth > 0) {
       // VNode is already in use, clone it. This can happen in the following
       // scenario:
       //   const reuse = <div />
@@ -189,7 +174,7 @@ function constructNewChildrenArray(newParentVNode, renderResult, oldChildren) {
         childVNode.type,
         childVNode.props,
         childVNode.key,
-        childVNode.ref ? childVNode.ref : null,
+        childVNode.ref ? childVNode.ref : NULL,
         childVNode._original
       );
     } else {
@@ -210,8 +195,8 @@ function constructNewChildrenArray(newParentVNode, renderResult, oldChildren) {
       remainingOldChildren
     ));
 
-    oldVNode = null;
-    if (matchingIndex !== -1) {
+    oldVNode = NULL;
+    if (matchingIndex != -1) {
       oldVNode = oldChildren[matchingIndex];
       remainingOldChildren--;
       if (oldVNode) {
@@ -221,19 +206,37 @@ function constructNewChildrenArray(newParentVNode, renderResult, oldChildren) {
 
     // Here, we define isMounting for the purposes of the skew diffing
     // algorithm. Nodes that are unsuspending are considered mounting and we detect
-    // this by checking if oldVNode._original === null
-    const isMounting = oldVNode == null || oldVNode._original === null;
+    // this by checking if oldVNode._original == null
+    const isMounting = oldVNode == NULL || oldVNode._original == NULL;
 
     if (isMounting) {
       if (matchingIndex == -1) {
-        skew--;
+        // When the array of children is growing we need to decrease the skew
+        // as we are adding a new element to the array.
+        // Example:
+        // [1, 2, 3] --> [0, 1, 2, 3]
+        // oldChildren   newChildren
+        //
+        // The new element is at index 0, so our skew is 0,
+        // we need to decrease the skew as we are adding a new element.
+        // The decrease will cause us to compare the element at position 1
+        // with value 1 with the element at position 0 with value 0.
+        //
+        // A linear concept is applied when the array is shrinking,
+        // if the length is unchanged we can assume that no skew
+        // changes are needed.
+        if (newChildrenLength > oldChildrenLength) {
+          skew--;
+        } else if (newChildrenLength < oldChildrenLength) {
+          skew++;
+        }
       }
 
       // If we are mounting a DOM VNode, mark it for insertion
       if (typeof childVNode.type != 'function') {
         childVNode._flags |= INSERT_VNODE;
       }
-    } else if (matchingIndex !== skewedIndex) {
+    } else if (matchingIndex != skewedIndex) {
       // When we move elements around i.e. [0, 1, 2] --> [1, 0, 2]
       // --> we diff 1, we find it at position 1 while our skewed index is 0 and our skew is 0
       //     we set the skew to 1 as we found an offset.
@@ -276,15 +279,17 @@ function constructNewChildrenArray(newParentVNode, renderResult, oldChildren) {
   if (remainingOldChildren) {
     for (i = 0; i < oldChildrenLength; i++) {
       oldVNode = oldChildren[i];
-      if (oldVNode != null && (oldVNode._flags & MATCHED) === 0) {
-        if (oldVNode._dom == newParentVNode._nextDom) {
-          newParentVNode._nextDom = getDomSibling(oldVNode);
+      if (oldVNode != NULL && (oldVNode._flags & MATCHED) == 0) {
+        if (oldVNode._dom == oldDom) {
+          oldDom = getDomSibling(oldVNode);
         }
 
         unmount(oldVNode, oldVNode);
       }
     }
   }
+
+  return oldDom;
 }
 
 /**
@@ -314,13 +319,13 @@ function insert(parentVNode, oldDom, parentDom) {
     if (oldDom && parentVNode.type && !parentDom.contains(oldDom)) {
       oldDom = getDomSibling(parentVNode);
     }
-    parentDom.insertBefore(parentVNode._dom, oldDom || null);
+    parentDom.insertBefore(parentVNode._dom, oldDom || NULL);
     oldDom = parentVNode._dom;
   }
 
   do {
     oldDom = oldDom && oldDom.nextSibling;
-  } while (oldDom != null && oldDom.nodeType === 8);
+  } while (oldDom != NULL && oldDom.nodeType == 8);
 
   return oldDom;
 }
@@ -333,7 +338,7 @@ function insert(parentVNode, oldDom, parentDom) {
  */
 export function toChildArray(children, out) {
   out = out || [];
-  if (children == null || typeof children == 'boolean') {
+  if (children == NULL || typeof children == 'boolean') {
   } else if (isArray(children)) {
     children.some(child => {
       toChildArray(child, out);
@@ -354,8 +359,6 @@ export function toChildArray(children, out) {
 function findMatchingIndex(childVNode, oldChildren, skewedIndex, remainingOldChildren) {
   const key = childVNode.key;
   const type = childVNode.type;
-  let x = skewedIndex - 1;
-  let y = skewedIndex + 1;
   let oldVNode = oldChildren[skewedIndex];
 
   // We only need to perform a search if there are more children
@@ -366,18 +369,25 @@ function findMatchingIndex(childVNode, oldChildren, skewedIndex, remainingOldChi
   // remainingOldChildren > 1 if the oldVNode is not already used/matched. Else
   // if the oldVNode was null or matched, then there could needs to be at least
   // 1 (aka `remainingOldChildren > 0`) children to find and compare against.
-  let shouldSearch = remainingOldChildren > (oldVNode != null && (oldVNode._flags & MATCHED) === 0 ? 1 : 0);
+  //
+  // If there is an unkeyed functional VNode, that isn't a built-in like our Fragment,
+  // we should not search as we risk re-using state of an unrelated VNode. (reverted for now)
+  let shouldSearch =
+    // (typeof type != 'function' || type === Fragment || key) &&
+    remainingOldChildren > (oldVNode != NULL && (oldVNode._flags & MATCHED) == 0 ? 1 : 0);
 
   if (
-    oldVNode === null ||
-    (oldVNode && key == oldVNode.key && type === oldVNode.type && (oldVNode._flags & MATCHED) === 0)
+    (oldVNode === NULL && childVNode.key == null) ||
+    (oldVNode && key == oldVNode.key && type == oldVNode.type && (oldVNode._flags & MATCHED) == 0)
   ) {
     return skewedIndex;
   } else if (shouldSearch) {
+    let x = skewedIndex - 1;
+    let y = skewedIndex + 1;
     while (x >= 0 || y < oldChildren.length) {
       if (x >= 0) {
         oldVNode = oldChildren[x];
-        if (oldVNode && (oldVNode._flags & MATCHED) === 0 && key == oldVNode.key && type === oldVNode.type) {
+        if (oldVNode && (oldVNode._flags & MATCHED) == 0 && key == oldVNode.key && type == oldVNode.type) {
           return x;
         }
         x--;
@@ -385,7 +395,7 @@ function findMatchingIndex(childVNode, oldChildren, skewedIndex, remainingOldChi
 
       if (y < oldChildren.length) {
         oldVNode = oldChildren[y];
-        if (oldVNode && (oldVNode._flags & MATCHED) === 0 && key == oldVNode.key && type === oldVNode.type) {
+        if (oldVNode && (oldVNode._flags & MATCHED) == 0 && key == oldVNode.key && type == oldVNode.type) {
           return y;
         }
         y++;

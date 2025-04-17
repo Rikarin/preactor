@@ -101,8 +101,8 @@ namespace Preactor {
         public void AddEventListener(string name, EventCallback<EventBase> callback, bool useCapture = false) {
             var nameLower = name.ToLower();
             var isValueChanged = nameLower == "valuechanged";
-            if (!isValueChanged && EventCache.ContainsKey(nameLower)) {
-                EventCache[nameLower](
+            if (!isValueChanged && EventCache.TryGetValue(nameLower, out var value)) {
+                value(
                     VisualElement,
                     callback,
                     useCapture ? TrickleDown.TrickleDown : TrickleDown.NoTrickleDown
@@ -125,7 +125,8 @@ namespace Preactor {
                 }
 
                 if (eventType != null) {
-                    var mi = GetType().GetMethod("RegisterCallback")!.MakeGenericMethod(eventType);
+                    // TODO: optimize
+                    var mi = typeof(Dom).GetMethod("RegisterCallback")!.MakeGenericMethod(eventType);
                     var del = (RegisterCallbackDelegate)Delegate.CreateDelegate(typeof(RegisterCallbackDelegate), mi);
                     if (!isValueChanged) {
                         EventCache.TryAdd(nameLower, del);
@@ -154,17 +155,24 @@ namespace Preactor {
                 return;
             }
 
+            Debug.Log($"Remove Callback {nameLower} count {callbackHolders.Count}");
+
             var eventType = Document.EventBaseCache.GetValueOrDefault(nameLower);
             if (eventType != null) {
+                Debug.Log("Removing");
                 const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
 
-                var mi = VisualElement.GetType()
+                // tODO: optimize
+                var mi = typeof(VisualElement)
                     .GetMethods(flags)
                     .First(m => m.Name == "UnregisterCallback" && m.GetGenericArguments().Length == 1)
                     .MakeGenericMethod(eventType);
 
                 for (var i = 0; i < callbackHolders.Count; i++) {
+                    Debug.Log($"Checking {i} | {callbackHolders[i].Callback.Target.GetHashCode()} == {callback.Target.GetHashCode()}");
+
                     if (callbackHolders[i].Callback == callback && callbackHolders[i].UseCapture == useCapture) {
+                        Debug.Log("Removed at " + i);
                         mi.Invoke(
                             VisualElement,
                             new object[] {
@@ -229,31 +237,27 @@ namespace Preactor {
         }
 
         [JsInterop]
-        public void InsertBefore(Dom a, Dom b) {
-            if (a == null) {
+        public void InsertBefore(Dom newNode, Dom referenceNode) {
+            if (newNode == null || newNode == referenceNode) {
                 return;
             }
 
-            if (b?.VisualElement == null || VisualElement.IndexOf(b.VisualElement) == -1) {
-                AppendChild(a);
+            if (referenceNode?.VisualElement == null || VisualElement.IndexOf(referenceNode.VisualElement) == -1) {
+                AppendChild(newNode);
                 return;
             }
 
-            if (a == b) {
-                return;
-            }
-
-            var index = VisualElement.IndexOf(b.VisualElement);
-            VisualElement.Insert(index, a.VisualElement);
-            childNodes.Insert(index, a);
-            a.NextSibling = b;
-            a.ParentNode = this;
+            var index = VisualElement.IndexOf(referenceNode.VisualElement);
+            VisualElement.Insert(index, newNode.VisualElement);
+            childNodes.Insert(index, newNode);
+            newNode.NextSibling = referenceNode;
+            newNode.ParentNode = this;
 
             if (index > 0) {
-                childNodes[index - 1].NextSibling = a;
+                childNodes[index - 1].NextSibling = newNode;
             }
 
-            Document.AddCachingDom(a);
+            Document.AddCachingDom(newNode);
         }
 
         [JsInterop]

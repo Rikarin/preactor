@@ -78,7 +78,7 @@ export type ComponentProps<C extends ComponentType<any> | keyof JSXInternal.Intr
       : {};
 
 export interface FunctionComponent<P = {}> {
-  (props: RenderableProps<P>, context?: any): ComponentChildren;
+  (props: RenderableProps<P>, context?: any): VNode | null;
   displayName?: string;
   defaultProps?: Partial<P> | undefined;
 }
@@ -143,7 +143,7 @@ export abstract class Component<P, S> {
 
   forceUpdate(callback?: () => void): void;
 
-  abstract render(props?: RenderableProps<P>, state?: Readonly<S>, context?: any): ComponentChildren;
+  abstract render(props?: RenderableProps<P>, state?: Readonly<S>, context?: any): ComponentChild;
 }
 
 //
@@ -161,7 +161,7 @@ export function createElement<P extends JSXInternal.HTMLAttributes<T>, T extends
   ...children: ComponentChildren[]
 ): VNode<ClassAttributes<T> & P>;
 export function createElement<P extends JSXInternal.SVGAttributes<T>, T extends HTMLElement>(
-  type: keyof JSXInternal.IntrinsicSVGElements,
+  type: keyof JSXInternal.IntrinsicElements,
   props: (ClassAttributes<T> & P) | null,
   ...children: ComponentChildren[]
 ): VNode<ClassAttributes<T> & P>;
@@ -190,7 +190,7 @@ export function h<P extends JSXInternal.HTMLAttributes<T>, T extends HTMLElement
   ...children: ComponentChildren[]
 ): VNode<ClassAttributes<T> & P>;
 export function h<P extends JSXInternal.SVGAttributes<T>, T extends HTMLElement>(
-  type: keyof JSXInternal.IntrinsicSVGElements,
+  type: keyof JSXInternal.IntrinsicElements,
   props: (ClassAttributes<T> & P) | null,
   ...children: ComponentChildren[]
 ): VNode<ClassAttributes<T> & P>;
@@ -296,12 +296,11 @@ export interface Provider<T>
 export interface PreactProvider<T> extends Provider<T> {}
 export type ContextType<C extends Context<any>> = C extends Context<infer T> ? T : never;
 
-export interface Context<T> extends preact.Provider<T> {
-  Consumer: preact.Consumer<T>;
-  Provider: preact.Provider<T>;
+export interface Context<T> {
+  Consumer: Consumer<T>;
+  Provider: Provider<T>;
   displayName?: string;
 }
-
 export interface PreactContext<T> extends Context<T> {}
 
 export function createContext<T>(defaultValue: T): Context<T>;

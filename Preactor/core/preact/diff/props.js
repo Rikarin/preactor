@@ -1,15 +1,17 @@
-import { IS_NON_DIMENSIONAL } from '../constants';
+import { NULL, SVG_NAMESPACE } from '../constants';
 import options from '../options';
 
 function setStyle(style, key, value) {
-  if (key[0] === '-') {
-    style.setProperty(key, value == null ? '' : value);
-  } else if (value == null) {
+  if (key[0] == '-') {
+    style.setProperty(key, value == NULL ? '' : value);
+  } else if (value == NULL) {
     style[key] = '';
   } else {
     style[key] = value;
   }
 }
+
+const CAPTURE_REGEX = /(PointerCapture)$|Capture$/i;
 
 // A logical clock to solve issues like https://github.com/preactjs/preact/issues/3927.
 // When the DOM performs an event it leaves micro-ticks in between bubbling up which means that
@@ -29,7 +31,7 @@ const eventDispatchTimes = new Map();
 
 /**
  * Set a property value on a DOM node
- * @param {PreactElement} dom The DOM node to modify
+ * @param {import('../internal').PreactElement} dom The DOM node to modify
  * @param {string} name The name of the property to set
  * @param {*} value The value to set the property to
  * @param {*} oldValue The old value the property had
@@ -38,7 +40,7 @@ const eventDispatchTimes = new Map();
 export function setProperty(dom, name, value, oldValue, namespace) {
   let useCapture;
 
-  o: if (name === 'style') {
+  o: if (name == 'style') {
     if (typeof value == 'string') {
       dom.style.cssText = value;
     } else {
@@ -56,7 +58,7 @@ export function setProperty(dom, name, value, oldValue, namespace) {
 
       if (value) {
         for (name in value) {
-          if (!oldValue || value[name] !== oldValue[name]) {
+          if (!oldValue || value[name] != oldValue[name]) {
             setStyle(dom.style, name, value[name]);
           }
         }
@@ -64,8 +66,8 @@ export function setProperty(dom, name, value, oldValue, namespace) {
     }
   }
   // Benchmark for comparison: https://esbench.com/bench/574c954bdb965b9a00965ac6
-  else if (name[0] === 'o' && name[1] === 'n') {
-    useCapture = name !== (name = name.replace(/(PointerCapture)$|Capture$/i, '$1'));
+  else if (name[0] == 'o' && name[1] == 'n') {
+    useCapture = name != (name = name.replace(CAPTURE_REGEX, '$1'));
     name = name.slice(2);
 
     if (!dom._listeners) dom._listeners = {};
@@ -82,7 +84,7 @@ export function setProperty(dom, name, value, oldValue, namespace) {
       dom.removeEventListener(name, useCapture ? eventProxyCapture : eventProxy, useCapture);
     }
   } else {
-    if (namespace == 'http://www.w3.org/2000/svg') {
+    if (namespace == SVG_NAMESPACE) {
       // Normalize incorrect prop usage for SVG:
       // - xlink:href / xlinkHref --> href (xlink:href was removed from SVG and isn't needed)
       // - className --> class
@@ -104,7 +106,7 @@ export function setProperty(dom, name, value, oldValue, namespace) {
       name in dom.ve
     ) {
       try {
-        dom.setAttribute(name, value == null ? '' : value);
+        dom.setAttribute(name, value == NULL ? '' : value);
         // labelled break is 1b smaller here than a return statement (sorry)
         break o;
       } catch (e) {}
@@ -119,8 +121,7 @@ export function setProperty(dom, name, value, oldValue, namespace) {
 
     if (typeof value == 'function') {
       // never serialize functions as attribute values
-      // } else if (value != null && (value !== false || name[4] === '-')) {
-    } else if (value != null && typeof value !== 'undefined') {
+    } else if (value != NULL && (value !== false || name[4] == '-')) {
       dom.setAttribute(name, name == 'popover' && value == true ? '' : value);
     } else {
       dom.removeAttribute(name);
@@ -136,7 +137,7 @@ export function setProperty(dom, name, value, oldValue, namespace) {
 function createEventProxy(useCapture) {
   /**
    * Proxy an event to hooked event handlers
-   * @param {PreactEvent} e The event object from the browser
+   * @param {import('../internal').PreactEvent} e The event object from the browser
    * @private
    */
   return function (e) {
@@ -151,10 +152,15 @@ function createEventProxy(useCapture) {
       }
 
       const dispatchTime = eventDispatchTimes.get(key);
-      if (dispatchTime < eventHandler._attached) {
-        return;
+
+      if (eventName == 'Click') {
+        // console.log(eventClock, dispatchTime, eventHandler?._attached, 'hand', eventHandler);
       }
 
+      if (dispatchTime < eventHandler?._attached) {
+        // if (eventHandler == null || dispatchTime < eventHandler?._attached) {
+        return;
+      }
       return eventHandler(options.event ? options.event(e) : e);
     }
   };
