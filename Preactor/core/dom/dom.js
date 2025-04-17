@@ -103,7 +103,7 @@ export class DomWrapper {
       boundListener = listener.bind(this);
       this.#boundListeners.set(listener, boundListener);
     }
-    this.#dom.AddEventListener(type, listener.bind(this), useCapture);
+    this.#dom.AddEventListener(type, boundListener, useCapture);
   }
   removeEventListener(type, listener, useCapture) {
     const boundListener = this.#boundListeners.get(listener);

@@ -121,18 +121,16 @@ export class DomWrapper {
 
   addEventListener(type: string, listener: (event: EventBase) => void, useCapture?: boolean) {
     let boundListener = this.#boundListeners.get(listener);
-
     if (!boundListener) {
       boundListener = listener.bind(this);
       this.#boundListeners.set(listener, boundListener);
     }
 
-    this.#dom.AddEventListener(type, listener.bind(this), useCapture);
+    this.#dom.AddEventListener(type, boundListener, useCapture);
   }
 
   removeEventListener(type: string, listener: (event: EventBase) => void, useCapture?: boolean) {
     const boundListener = this.#boundListeners.get(listener);
-
     if (boundListener) {
       this.#dom.RemoveEventListener(type, boundListener, useCapture);
       this.#boundListeners.delete(listener);

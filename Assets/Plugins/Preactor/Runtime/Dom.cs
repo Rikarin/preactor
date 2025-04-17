@@ -21,25 +21,25 @@ namespace Preactor {
         readonly List<Dom> childNodes = new();
         readonly Dictionary<string, List<RegisteredCallbackHolder>> registeredCallbacks = new();
         static readonly Dictionary<string, RegisterCallbackDelegate> EventCache = new();
+
+        static readonly Type ChangeEventType =
+            typeof(VisualElement).Assembly.GetType("UnityEngine.UIElements.ChangeEvent`1");
+
+        static readonly MethodInfo RegisterCallbackMethod = typeof(Dom)
+            .GetMethod("RegisterCallback", BindingFlags.Public | BindingFlags.Static);
+
+        static readonly MethodInfo UnregisterCallbackMethod = typeof(VisualElement)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .First(m => m.Name == "UnregisterCallback" && m.GetGenericArguments().Length == 1);
+
         public Document Document { get; }
 
-        [JsInterop]
-        public VisualElement VisualElement { get; }
-
-        [JsInterop]
-        public Dom[] ChildNodes => childNodes.ToArray();
-
-        [JsInterop]
-        public Dom FirstChild => childNodes.FirstOrDefault();
-
-        [JsInterop]
-        public Dom ParentNode { get; private set; }
-
-        [JsInterop]
-        public Dom NextSibling { get; private set; }
-
-        [JsInterop]
-        public int NodeType { get; private set; }
+        [JsInterop] public VisualElement VisualElement { get; }
+        [JsInterop] public Dom[] ChildNodes => childNodes.ToArray();
+        [JsInterop] public Dom FirstChild => childNodes.FirstOrDefault();
+        [JsInterop] public Dom ParentNode { get; private set; }
+        [JsInterop] public Dom NextSibling { get; private set; }
+        [JsInterop] public int NodeType { get; private set; }
 
         [JsInterop]
         public string Id {
@@ -47,17 +47,10 @@ namespace Preactor {
             set => VisualElement.name = value;
         }
 
-        [JsInterop]
-        public string Key { get; set; }
-
-        [JsInterop]
-        public DomStyle Style { get; }
-
-        [JsInterop]
-        public object Value { get; private set; }
-
-        [JsInterop]
-        public bool Checked { get; private set; }
+        [JsInterop] public string Key { get; set; }
+        [JsInterop] public DomStyle Style { get; }
+        [JsInterop] public object Value { get; private set; }
+        [JsInterop] public bool Checked { get; private set; }
 
         [JsInterop]
         public object Data {
@@ -117,16 +110,14 @@ namespace Preactor {
 
                     if (notifyInterface != null) {
                         var valType = notifyInterface.GenericTypeArguments[0];
-                        eventType = typeof(VisualElement).Assembly.GetType("UnityEngine.UIElements.ChangeEvent`1");
-                        eventType = eventType.MakeGenericType(valType);
+                        eventType = ChangeEventType.MakeGenericType(valType);
                     }
                 } else {
                     eventType = Document.EventBaseCache.GetValueOrDefault(nameLower);
                 }
 
                 if (eventType != null) {
-                    // TODO: optimize
-                    var mi = typeof(Dom).GetMethod("RegisterCallback")!.MakeGenericMethod(eventType);
+                    var mi = RegisterCallbackMethod.MakeGenericMethod(eventType);
                     var del = (RegisterCallbackDelegate)Delegate.CreateDelegate(typeof(RegisterCallbackDelegate), mi);
                     if (!isValueChanged) {
                         EventCache.TryAdd(nameLower, del);
@@ -155,24 +146,11 @@ namespace Preactor {
                 return;
             }
 
-            Debug.Log($"Remove Callback {nameLower} count {callbackHolders.Count}");
-
             var eventType = Document.EventBaseCache.GetValueOrDefault(nameLower);
             if (eventType != null) {
-                Debug.Log("Removing");
-                const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
-
-                // tODO: optimize
-                var mi = typeof(VisualElement)
-                    .GetMethods(flags)
-                    .First(m => m.Name == "UnregisterCallback" && m.GetGenericArguments().Length == 1)
-                    .MakeGenericMethod(eventType);
-
+                var mi = UnregisterCallbackMethod.MakeGenericMethod(eventType);
                 for (var i = 0; i < callbackHolders.Count; i++) {
-                    Debug.Log($"Checking {i} | {callbackHolders[i].Callback.Target.GetHashCode()} == {callback.Target.GetHashCode()}");
-
                     if (callbackHolders[i].Callback == callback && callbackHolders[i].UseCapture == useCapture) {
-                        Debug.Log("Removed at " + i);
                         mi.Invoke(
                             VisualElement,
                             new object[] {
@@ -181,8 +159,7 @@ namespace Preactor {
                             }
                         );
 
-                        callbackHolders.RemoveAt(i);
-                        i--;
+                        callbackHolders.RemoveAt(i--);
                     }
                 }
 
@@ -200,7 +177,7 @@ namespace Preactor {
 
             try {
                 VisualElement.Add(node.VisualElement);
-            } catch (Exception e) {
+            } catch (Exception) {
                 throw new("Unable to add DOM (AppendChild)");
             }
 
