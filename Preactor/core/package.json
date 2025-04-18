@@ -6,7 +6,7 @@
     "type": "git",
     "url": "git+https://github.com/rikarin/preactor.git"
   },
-  "version": "0.0.22",
+  "version": "0.1.0",
   "main": "./index.js",
   "module": "./index.js",
   "types": "./typings.d.ts",

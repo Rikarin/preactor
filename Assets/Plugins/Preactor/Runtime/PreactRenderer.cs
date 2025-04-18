@@ -13,18 +13,14 @@ namespace Preactor {
     [RequireComponent(typeof(UIDocument))]
     [AddComponentMenu("Preactor/Preact Renderer")]
     public class PreactRenderer : MonoBehaviour, IScriptEngine {
-        [field: SerializeField]
-        public TextAsset EntryFile { get; private set; }
+        [field: SerializeField] public TextAsset EntryFile { get; private set; }
 
         [field: PairMapping("obj", "name")]
         [field: SerializeField]
         public ObjectMappingPair[] GlobalObjects { get; private set; }
 
-        [field: SerializeField]
-        public TextAsset[] Preloads { get; private set; }
-
-        [field: SerializeField]
-        public StyleSheet[] StyleSheets { get; private set; }
+        [field: SerializeField] public TextAsset[] Preloads { get; private set; }
+        [field: SerializeField] public StyleSheet[] StyleSheets { get; private set; }
 
         [Tooltip("Watch entry file for changes and reload. Ignored outside of editor.")]
         [field: SerializeField]
@@ -34,8 +30,9 @@ namespace Preactor {
         [field: SerializeField]
         public int PollingInterval { get; private set; } = 300;
 
-        [field: SerializeField]
-        public bool ClearLogs { get; private set; } = true;
+        [field: SerializeField] public bool ClearLogs { get; private set; } = true;
+        [field: SerializeField] public bool EnableRemoteDebugging { get; private set; }
+        [field: SerializeField] public int DebuggerPort { get; private set; } = 9222;
 
         int fileHash;
         float lastCheckTime;
@@ -100,13 +97,19 @@ namespace Preactor {
 
         void Initialize() {
             JsEnv?.Dispose();
-            JsEnv = new();
+
+            if (EnableRemoteDebugging) {
+                JsEnv = new(new DefaultLoader(), DebuggerPort);
+            } else {
+                JsEnv = new();
+            }
+
             JsEnv.UsingAction<Action>();
             JsEnv.UsingAction<bool>();
             ClearVisualElement();
 
             var global = FindFirstObjectByType<PreactGlobal>();
-            if (global != null) {
+            if (global) {
                 foreach (var preload in global.Preloads) {
                     JsEnv.Eval(preload.text);
                 }

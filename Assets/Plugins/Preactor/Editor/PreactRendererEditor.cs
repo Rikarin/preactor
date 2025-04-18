@@ -7,9 +7,10 @@ namespace Preactor.Editor {
     [CanEditMultipleObjects]
     public class PreactRendererEditor : UnityEditor.Editor {
         SerializedProperty clearLogs;
+        SerializedProperty debuggerPort;
+        SerializedProperty enableRemoteDebugging;
         SerializedProperty entryFile;
         SerializedProperty globalObjects;
-
         SerializedProperty liveReload;
         SerializedProperty pollingInterval;
         SerializedProperty preloads;
@@ -24,6 +25,9 @@ namespace Preactor.Editor {
             liveReload = serializedObject.FindProperty("<LiveReload>k__BackingField");
             pollingInterval = serializedObject.FindProperty("<PollingInterval>k__BackingField");
             clearLogs = serializedObject.FindProperty("<ClearLogs>k__BackingField");
+
+            enableRemoteDebugging = serializedObject.FindProperty("<EnableRemoteDebugging>k__BackingField");
+            debuggerPort = serializedObject.FindProperty("<DebuggerPort>k__BackingField");
         }
 
         public override void OnInspectorGUI() {
@@ -37,6 +41,11 @@ namespace Preactor.Editor {
             if (liveReload.boolValue) {
                 EditorGUILayout.PropertyField(pollingInterval, new GUIContent("    Polling Interval (ms)"));
                 EditorGUILayout.PropertyField(clearLogs, new GUIContent("    Clear Logs on Reload"));
+            }
+
+            EditorGUILayout.PropertyField(enableRemoteDebugging, new GUIContent("Enable Remote Debugging"));
+            if (enableRemoteDebugging.boolValue) {
+                EditorGUILayout.PropertyField(debuggerPort, new GUIContent("Debugger Port"));
             }
 
             serializedObject.ApplyModifiedProperties();
