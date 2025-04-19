@@ -57,7 +57,7 @@ You'll need to compile your JavaScript views into the Unity asset directory as `
 1. Run the following command in your terminal to start the build process:
 
     ```sh
-    npm run start
+    pnpm run start
     ```
 
 This command will compile your TypeScript views and automatically generate the necessary `.js` files inside the Unity asset directory.
