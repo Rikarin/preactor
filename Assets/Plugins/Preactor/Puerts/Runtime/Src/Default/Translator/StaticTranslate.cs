@@ -5,9 +5,10 @@
 * This file is subject to the terms and conditions defined in file 'LICENSE', which is part of this source code package.
 */
 
-#if !EXPERIMENTAL_IL2CPP_PUERTS || !ENABLE_IL2CPP
+#if PUERTS_DISABLE_IL2CPP_OPTIMIZATION || (!PUERTS_IL2CPP_OPTIMIZATION && (UNITY_WEBGL || UNITY_IPHONE)) || !ENABLE_IL2CPP
 
 using System;
+using UnityEngine;
 
 namespace Puerts
 {
@@ -41,8 +42,7 @@ namespace Puerts
             {
                 return default(T);
             }
-            else
-            {
+            else {
                 return (T)obj;
             }
         }

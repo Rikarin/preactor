@@ -5,7 +5,7 @@
 * This file is subject to the terms and conditions defined in file 'LICENSE', which is part of this source code package.
 */
 
-#if !EXPERIMENTAL_IL2CPP_PUERTS || !ENABLE_IL2CPP
+#if PUERTS_DISABLE_IL2CPP_OPTIMIZATION || (!PUERTS_IL2CPP_OPTIMIZATION && (UNITY_WEBGL || UNITY_IPHONE)) || !ENABLE_IL2CPP
 
 using System;
 using System.Collections.Generic;
@@ -55,7 +55,7 @@ namespace Puerts
             return nativeJsObjectPtr;
         }
 
-        public JSObject(IntPtr nativeJsObjectPtr, JsEnv jsEnv)
+        internal JSObject(IntPtr nativeJsObjectPtr, JsEnv jsEnv)
         {
             this.nativeJsObjectPtr = nativeJsObjectPtr;
             this.jsEnv = jsEnv;

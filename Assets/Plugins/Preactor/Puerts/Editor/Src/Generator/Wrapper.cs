@@ -354,7 +354,7 @@ namespace Puerts.Editor
             {
                 public string TypeName; // If it is a methodGenInfo, TypeName represents the return type
                 public bool IsEnum;
-                public bool IsNullable;
+                public bool IsNullable; // MODDED
                 public string UnderlyingTypeName;
             }
 

@@ -170,7 +170,7 @@ export default function TypingTemplate(data) {
     }
 
     return $
-        `#if !(EXPERIMENTAL_IL2CPP_PUERTS && ENABLE_IL2CPP)
+        `#if PUERTS_DISABLE_IL2CPP_OPTIMIZATION || (!PUERTS_IL2CPP_OPTIMIZATION && (UNITY_WEBGL || UNITY_IPHONE))
         ${FOR(toJsArray(data.Namespaces), name => `
 using ${name};`
         )}
@@ -580,7 +580,7 @@ function setReturn(typeInfo) {
     let typeName = typeInfo.TypeName;
     if (typeName in fixReturn) {
         return fixReturn[typeName];
-    } else if (typeInfo.IsNullable && typeInfo.IsEnum) {
+    } else if (typeInfo.IsNullable && typeInfo.IsEnum) { // MODDED
         return 'if (result.HasValue) '
             + fixReturn[typeInfo.UnderlyingTypeName].replace('result', `(${typeInfo.UnderlyingTypeName})result`)
             + '; else Puerts.PuertsDLL.ReturnNull(isolate, info)';
