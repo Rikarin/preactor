@@ -1,7 +1,16 @@
 ---
 title: Installation
-description: A guide in my new Starlight docs site.
+description: Step-by-step guide to install and set up Preactor in your Unity project.
 ---
+
+## Prerequisites
+
+Before installing Preactor, ensure you have:
+
+- Unity 2021.3 or newer
+- Node.js 14+ and npm installed on your development machine
+- Basic familiarity with Unity's Package Manager
+- Git installed (for package installation)
 
 
 
@@ -84,9 +93,42 @@ This command will compile your TypeScript views and automatically generate the n
 **Preactor** supports Unity's Addressables system, allowing for efficient asset management and asynchronous loading. Here’s how to use it with your Preactor-rendered prefabs:
 
 1. Place your prefab with the `Preact Renderer` component into an **Addressable Group** along with its corresponding `index.js` file.
-   
+
 2. These assets can now be packaged, distributed, and loaded asynchronously as part of your Addressables workflow.
 
 ### Benefits:
 - **Seamless Updates:** With this setup, you can push game updates that include new UI views or UI changes without needing to release a new version through app distribution platforms like the App Store or Google Play.
 - **Flexible Delivery:** Addressables allow your game to load only the necessary assets on-demand, optimizing performance and reducing initial download size.
+
+## Troubleshooting
+
+### Common Issues
+
+#### Package Installation Fails
+- Ensure you have Git installed and properly configured
+- Check your network connection
+- Verify you have the correct permissions to install packages in Unity
+
+#### JavaScript Compilation Errors
+- Make sure Node.js and npm are properly installed
+- Run `pnpm install` in the Preactor directory to ensure all dependencies are installed
+- Check for syntax errors in your TypeScript files
+
+#### Preactor Renderer Not Working
+- Verify that the Preactor Global object exists in your scene
+- Check that the path to your JavaScript file is correct
+- Look for errors in the Unity console related to JavaScript execution
+
+#### Addressables Integration Issues
+- Ensure you have the Addressables package installed in your Unity project
+- Verify that both the prefab and its corresponding JavaScript file are in the same Addressable group
+
+## Next Steps
+
+Now that you have Preactor installed and configured, you can:
+
+1. Check out the [Examples](/examples/button) to see how to create UI components
+2. Learn about [Localization](/examples/localization) to make your UI support multiple languages
+3. Explore [Extensions](/examples/extensions) to see how to extend Preactor's functionality
+
+For more advanced usage, refer to the [Reference](/reference) section.

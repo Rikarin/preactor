@@ -10,10 +10,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.27.1",
-    "astro": "^4.15.3",
-    "sharp": "^0.32.5",
-    "@astrojs/check": "^0.9.3",
-    "typescript": "^5.6.2"
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/starlight": "^0.34.0",
+    "@fontsource-variable/montserrat": "^5.2.5",
+    "@fontsource-variable/unbounded": "^5.2.5",
+    "astro": "^5.7.4",
+    "sharp": "^0.34.1",
+    "typescript": "^5.8.3"
   }
 }
