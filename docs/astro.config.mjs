@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
-	site: 'https://preactor.rikarin.app/',
+	site: 'https://preactor.rikarin.io/',
 	base: '/',
 	integrations: [
 		starlight({
