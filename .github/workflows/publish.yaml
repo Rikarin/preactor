@@ -36,7 +36,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Publish Packages
-        run: pnpm run publish
+        run: pnpm run publish-ci
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

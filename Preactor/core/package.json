@@ -1,6 +1,6 @@
 {
   "name": "@rikarin/preactor",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "private": false,
   "description": "Interop between preact and C#",
   "keywords": [
@@ -27,7 +27,7 @@
     "build": "tsc -p ./tsconfig.json",
     "clean": "rm -rf dist",
     "format": "prettier . --write",
-    "publish": "pnpm publish --no-git-checks",
+    "publish-ci": "pnpm publish --no-git-checks",
     "release": "cp ../../README.md . && pnpm run clean && pnpm run build && pnpm run format",
     "start": "tsc -w -p ./tsconfig.json"
   },
