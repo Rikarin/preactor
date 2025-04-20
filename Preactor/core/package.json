@@ -1,12 +1,25 @@
 {
   "name": "@rikarin/preactor",
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "private": false,
   "description": "Interop between preact and C#",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/rikarin/preactor.git"
+  "keywords": [
+    "unity",
+    "preact",
+    "tailwindcss",
+    "ui",
+    "gui"
+  ],
+  "homepage": "https://preactor.rikarin.io",
+  "bugs": {
+    "url": "https://github.com/rikarin/preactor/issues"
   },
-  "license": "MIT",
+  "repository": "https://github.com/Rikarin/preactor",
+  "license": "Apache-2.0",
+  "author": "Rene Cincura",
+  "maintainers": [
+    "Rene Cincura"
+  ],
   "main": "./index.js",
   "module": "./index.js",
   "types": "./typings.d.ts",
@@ -14,7 +27,8 @@
     "build": "tsc -p ./tsconfig.json",
     "clean": "rm -rf dist",
     "format": "prettier . --write",
-    "pub": "npm run clean && npm run build && npm run format && npm publish --access public",
+    "pub": "npm run release && npm publish --access public",
+    "release": "npm run clean && npm run build && npm run format",
     "start": "tsc -w -p ./tsconfig.json"
   },
   "dependencies": {
