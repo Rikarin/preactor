@@ -9,6 +9,9 @@ jobs:
   test:
     name: Publish
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Preactor/core
     permissions:
       contents: read
       id-token: write # needed for provenance data generation
@@ -32,7 +35,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Publish Packages
-        run: pnpm -C Preactor/core run publish
+        run: pnpm run publish
         shell: bash
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
