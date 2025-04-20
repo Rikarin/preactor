@@ -27,7 +27,7 @@
     "build": "tsc -p ./tsconfig.json",
     "clean": "rm -rf dist",
     "format": "prettier . --write",
-    "publish": "pnpm publish",
+    "publish": "pnpm publish --no-git-checks",
     "release": "cp ../../README.md . && pnpm run clean && pnpm run build && pnpm run format",
     "start": "tsc -w -p ./tsconfig.json"
   },
