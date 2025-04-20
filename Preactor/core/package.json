@@ -27,8 +27,8 @@
     "build": "tsc -p ./tsconfig.json",
     "clean": "rm -rf dist",
     "format": "prettier . --write",
-    "pub": "npm run release && npm publish --access public",
-    "release": "npm run clean && npm run build && npm run format",
+    "publish": "pnpm publish",
+    "release": "cp ../../README.md . && pnpm run clean && pnpm run build && pnpm run format",
     "start": "tsc -w -p ./tsconfig.json"
   },
   "dependencies": {
