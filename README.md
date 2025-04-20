@@ -8,6 +8,7 @@
   [![Unity Version](https://img.shields.io/badge/Unity-6.0%2B-blue.svg)](https://unity.com/)
   [![License](https://img.shields.io/badge/License-Apache-green.svg)](LICENSE)
   [![Documentation](https://img.shields.io/badge/Documentation-Website-orange.svg)](https://preactor.rikarin.io/)
+  [![Discord](https://img.shields.io/discord/1363033493075922954)](https://discord.gg/pgnTGv3GbH)
 </div>
 
 ## 🚀 Overview
