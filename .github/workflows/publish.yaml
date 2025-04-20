@@ -31,10 +31,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
           cache: 'pnpm'
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-        shell: bash
-
       - name: Publish Packages
         run: pnpm -C Preactor/core run publish
         shell: bash
