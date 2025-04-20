@@ -1,6 +1,6 @@
 import { EMPTY_OBJ, NULL } from './constants';
-import { commitRoot, diff } from './diff/index';
 import { createElement, Fragment } from './create-element';
+import { commitRoot, diff } from './diff/index';
 import options from './options';
 import { slice } from './util';
 

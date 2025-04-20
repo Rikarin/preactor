@@ -1,5 +1,5 @@
 // @ts-ignore - prevent `allowImportingTsExtensions` error
-export { parseColor, parseCSSColor, colorStrToF4, namedColor, namedColors } from './color-parser';
+export { colorStrToF4, namedColor, namedColors, parseCSSColor, parseColor } from './color-parser';
 // @ts-ignore - prevent `allowImportingTsExtensions` error
 export { palettes } from './color-palettes';
 // @ts-ignore - prevent `allowImportingTsExtensions` error

@@ -1,35 +1,51 @@
 {
   "name": "@rikarin/preactor",
+  "version": "0.1.0",
   "description": "Interop between preact and C#",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rikarin/preactor.git"
   },
-  "version": "0.1.0",
+  "license": "MIT",
   "main": "./index.js",
   "module": "./index.js",
   "types": "./typings.d.ts",
   "scripts": {
-    "clean": "rm -rf dist",
     "build": "tsc -p ./tsconfig.json",
-    "start": "tsc -w -p ./tsconfig.json",
+    "clean": "rm -rf dist",
     "format": "prettier . --write",
-    "pub": "npm run clean && npm run build && npm publish --access public"
+    "pub": "npm run clean && npm run build && npm run format && npm publish --access public",
+    "start": "tsc -w -p ./tsconfig.json"
   },
   "dependencies": {
-    "css-flatten": "^2.0.0",
-    "css-simple-parser": "^3.0.0",
-    "typescript": "^5.6.2"
+    "css-flatten": "^2.0.1",
+    "css-simple-parser": "^3.0.2",
+    "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "esbuild": "^0.23.1",
-    "fs-extra": "^11.2.0",
-    "postcss": "^8.4.47",
-    "postcss-cli": "^11.0.0",
-    "prettier": "^3.3.3",
-    "rimraf": "^5.0.7",
-    "tailwindcss": "^3.4.11",
+    "esbuild": "^0.25.2",
+    "fs-extra": "^11.3.0",
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "prettier-plugin-packagejson": "^2.5.10",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "rimraf": "^6.0.1",
+    "tailwindcss": "^3.4.1",
     "tiny-glob": "^0.2.9"
+  },
+  "packageManager": "pnpm@10.7.0",
+  "engines": {
+    "node": "20.x || 21.x || 22.x || 23.x",
+    "npm": "please-use-pnpm",
+    "pnpm": ">=10",
+    "yarn": "please-use-pnpm"
+  },
+  "engineStrict": true,
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

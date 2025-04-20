@@ -1,11 +1,10 @@
 declare module 'preact/jsx' {
-  import { Color, Font, Texture, Texture2D, FontStyle, ScaleMode, TextAnchor, Sprite } from 'UnityEngine';
-  import { float2, float3, float4 } from 'Unity/Mathematics';
+  import { float2, float4 } from 'Unity/Mathematics';
+  import { Color, Font, FontStyle, ScaleMode, Sprite, TextAnchor, Texture, Texture2D } from 'UnityEngine';
   import {
     Align,
     BackgroundRepeat,
     DisplayStyle,
-    EasingFunction,
     EasingMode,
     FlexDirection,
     FontDefinition,

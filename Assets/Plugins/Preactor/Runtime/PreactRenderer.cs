@@ -106,6 +106,7 @@ namespace Preactor {
 
             JsEnv.UsingAction<Action>();
             JsEnv.UsingAction<bool>();
+            JsEnv.UsingAction<Vector2>();
             ClearVisualElement();
 
             var global = FindFirstObjectByType<PreactGlobal>();

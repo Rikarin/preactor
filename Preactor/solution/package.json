@@ -7,22 +7,38 @@
     "start:esbuild": "node ./esbuild.mjs",
     "start:tailwind": "postcss input.css -o ../Assets/Views/Tailwind.uss --watch",
     "start": "npm-run-all --parallel start:*",
-    "format": "prettier . --write"
-  },
-  "devDependencies": {
-    "chokidar": "^4.0.0",
-    "esbuild": "^0.20.0",
-    "npm-run-all": "^4.1.5",
-    "postcss": "^8.4.38",
-    "postcss-cli": "^11.0.0",
-    "prettier": "^3.3.3",
-    "tailwindcss": "^3.4.1",
-    "tiny-glob": "^0.2.9",
-    "typescript": "^5.5.4"
+    "format": "prettier . --write",
+    "lint": "biome check --write ./Views ./Components ./Hooks"
   },
   "dependencies": {
-    "@rikarin/preactor": "^0.0.7",
-    "css-flatten": "^2.0.0",
-    "css-simple-parser": "^3.0.0"
-  }
+    "@rikarin/preactor": ">=0",
+    "@tweenjs/tween.js": "^25.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "css-flatten": "^2.0.1",
+    "css-simple-parser": "^3.0.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "chokidar": "^4.0.3",
+    "esbuild": "^0.25.2",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "prettier-plugin-packagejson": "^2.5.10",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "tailwindcss": "^3.4.1",
+    "tiny-glob": "^0.2.9",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@10.7.0",
+  "engines": {
+    "node": "20.x || 21.x || 22.x || 23.x",
+    "npm": "please-use-pnpm",
+    "pnpm": ">=10",
+    "yarn": "please-use-pnpm"
+  },
+  "engineStrict": true
 }

@@ -317,4 +317,4 @@ export function parseColor(input: string | number[] | float4): Color {
   return new Color(input.x, input.y, input.z, input.w);
 }
 
-export { parseCSSColor, namedColor, namedColors };
+export { namedColor, namedColors, parseCSSColor };

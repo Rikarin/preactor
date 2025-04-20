@@ -1,6 +1,6 @@
-import { slice } from './util';
-import options from './options';
 import { NULL, UNDEFINED } from './constants';
+import options from './options';
+import { slice } from './util';
 
 let vnodeId = 0;
 

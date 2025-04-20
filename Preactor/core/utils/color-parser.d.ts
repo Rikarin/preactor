@@ -158,4 +158,4 @@ export declare function colorStrToF4(str: string): float4;
  * Can parse any css color, array of 4 values [0 to 1.0], or a plain float4
  */
 export declare function parseColor(input: string | number[] | float4): Color;
-export { parseCSSColor, namedColor, namedColors };
+export { namedColor, namedColors, parseCSSColor };

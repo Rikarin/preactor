@@ -296,4 +296,4 @@ export function parseColor(input) {
   }
   return new Color(input.x, input.y, input.z, input.w);
 }
-export { parseCSSColor, namedColor, namedColors };
+export { namedColor, namedColors, parseCSSColor };

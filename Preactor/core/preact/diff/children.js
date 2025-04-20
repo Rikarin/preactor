@@ -1,8 +1,8 @@
-import { diff, unmount, applyRef } from './index';
-import { createVNode, Fragment } from '../create-element';
-import { EMPTY_OBJ, EMPTY_ARR, INSERT_VNODE, MATCHED, UNDEFINED, NULL } from '../constants';
-import { isArray } from '../util';
 import { getDomSibling } from '../component';
+import { EMPTY_ARR, EMPTY_OBJ, INSERT_VNODE, MATCHED, NULL, UNDEFINED } from '../constants';
+import { createVNode, Fragment } from '../create-element';
+import { isArray } from '../util';
+import { applyRef, diff, unmount } from './index';
 
 /**
  * @typedef {import('../internal').ComponentChildren} ComponentChildren

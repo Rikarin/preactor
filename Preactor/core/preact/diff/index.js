@@ -1,3 +1,4 @@
+import { BaseComponent, getDomSibling } from '../component';
 import {
   EMPTY_OBJ,
   MATH_NAMESPACE,
@@ -9,12 +10,11 @@ import {
   UNDEFINED,
   XHTML_NAMESPACE
 } from '../constants';
-import { BaseComponent, getDomSibling } from '../component';
 import { Fragment } from '../create-element';
+import options from '../options';
+import { assign, isArray, removeNode, slice } from '../util';
 import { diffChildren } from './children';
 import { setProperty } from './props';
-import { assign, isArray, removeNode, slice } from '../util';
-import options from '../options';
 
 /**
  * @typedef {import('../internal').ComponentChildren} ComponentChildren

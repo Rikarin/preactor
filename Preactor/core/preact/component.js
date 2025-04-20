@@ -1,8 +1,8 @@
-import { assign } from './util';
-import { diff, commitRoot } from './diff/index';
-import options from './options';
-import { Fragment } from './create-element';
 import { MODE_HYDRATE, NULL } from './constants';
+import { Fragment } from './create-element';
+import { commitRoot, diff } from './diff/index';
+import options from './options';
+import { assign } from './util';
 
 /**
  * Base Component class. Provides `setState()` and `forceUpdate()`, which
