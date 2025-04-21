@@ -21,8 +21,6 @@ declare namespace Preactor {
 }
 
 declare const interop: {
-  add_OnReload(handler: () => void): void;
-  remove_OnReload(handler: () => void): void;
   add_OnDestroy(handler: () => void): void;
   remove_OnDestroy(handler: () => void): void;
 

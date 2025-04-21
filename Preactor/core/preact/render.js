@@ -4,6 +4,8 @@ import { commitRoot, diff } from './diff/index';
 import options from './options';
 import { slice } from './util';
 
+let cleanupAdded = false;
+
 /**
  * Render a Preact virtual node into a DOM element
  * @param {import('./internal').ComponentChild} vnode The virtual node to render
@@ -12,6 +14,11 @@ import { slice } from './util';
  * existing DOM tree rooted at `replaceNode`
  */
 export function render(vnode, parentDom, replaceNode) {
+  if (!cleanupAdded) {
+    interop.add_OnDestroy(() => render(null, parentDom));
+    cleanupAdded = true;
+  }
+
   // https://github.com/preactjs/preact/issues/3794
   if (parentDom == document) {
     parentDom = document.documentElement;

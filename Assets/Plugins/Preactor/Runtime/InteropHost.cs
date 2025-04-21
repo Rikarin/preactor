@@ -41,14 +41,11 @@ namespace Preactor {
             }
 
             var disposable = methodInfo.Invoke(store, new[] { dicKey, callback }) as IDisposable;
-            OnReload += Unsubscribe;
             OnDestroy += Unsubscribe;
-
             return Unsubscribe;
 
             void Unsubscribe() {
                 disposable?.Dispose();
-                OnReload -= Unsubscribe;
                 OnDestroy -= Unsubscribe;
             }
         }
@@ -82,35 +79,19 @@ namespace Preactor {
             }
 
             var handlerDelegate = GenericDelegateWrapper.Wrap(eventInfo, handler);
-            var isOnReloadEvent = eventSource == this && eventName == nameof(OnReload);
-
             eventInfo.AddEventHandler(eventSource, handlerDelegate);
 
             OnDestroy += Unsubscribe;
-            if (!isOnReloadEvent) {
-                OnReload += Unsubscribe;
-            }
-
             return Unsubscribe;
 
             void Unsubscribe() {
                 eventInfo.RemoveEventHandler(eventSource, handlerDelegate);
                 OnDestroy -= Unsubscribe;
-
-                if (!isOnReloadEvent) {
-                    OnReload -= Unsubscribe;
-                }
             }
         }
 
         [JsInterop]
         public Action Subscribe(string eventName, GenericDelegate handler) => Subscribe(this, eventName, handler);
-
-        [JsInterop]
-        public event Action OnReload {
-            add => scriptEngine.OnReload += value;
-            remove => scriptEngine.OnReload -= value;
-        }
 
         [JsInterop]
         public event Action OnDestroy {

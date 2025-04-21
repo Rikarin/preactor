@@ -78,12 +78,12 @@ namespace Preactor {
 
         public IContentProvider ContentProvider { get; private set; }
 
-        public event Action OnReload;
         public event Action OnDestroyed;
 
         public void Shutdown() {
             if (JsEnv != null) {
                 OnDestroyed?.Invoke();
+                OnDestroyed = null;
                 JsEnv.Dispose();
             }
 
@@ -91,7 +91,8 @@ namespace Preactor {
         }
 
         public void Reload() {
-            OnReload?.Invoke();
+            OnDestroyed?.Invoke();
+            OnDestroyed = null;
             Initialize();
         }
 
@@ -107,6 +108,7 @@ namespace Preactor {
             JsEnv.UsingAction<Action>();
             JsEnv.UsingAction<bool>();
             JsEnv.UsingAction<Vector2>();
+            JsEnv.UsingAction<Vector3>();
             ClearVisualElement();
 
             var global = FindFirstObjectByType<PreactGlobal>();
