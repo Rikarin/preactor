@@ -140,6 +140,8 @@ function taskToPromise(task) {
                 } else {
                     reject("unknow exception!");
                 }
+            } else if (t.IsCanceled) {
+                reject("Task cancelled");
             } else {
                 resolve(t.Result);
             }
